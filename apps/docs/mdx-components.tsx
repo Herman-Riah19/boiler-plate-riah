@@ -1,9 +1,7 @@
 import type { MDXComponents } from 'mdx/types'
 import Image, { ImageProps } from 'next/image'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
-// 🧩 Version ESM de Prism (meilleure compatibilité Next.js)
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
-// Import de la syntaxe TS/JS pour que Prism sache les colorer
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx'
 import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript'
 import javascript from 'react-syntax-highlighter/dist/esm/languages/prism/javascript'
@@ -11,7 +9,6 @@ import json from 'react-syntax-highlighter/dist/esm/languages/prism/json'
 import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash'
 import { Terminal } from './components/terminal'
 
-// ✅ Enregistrer les langages nécessaires
 SyntaxHighlighter.registerLanguage('tsx', tsx)
 SyntaxHighlighter.registerLanguage('typescript', typescript)
 SyntaxHighlighter.registerLanguage('javascript', javascript)
@@ -21,7 +18,7 @@ SyntaxHighlighter.registerLanguage('bash', bash)
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     h1: ({ children }) => (
-      <h1 className="mt-4 text-[4vw] font-extrabold text-center bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+      <h1 className="mt-4 text-[4vw] font-extrabold text-center bg-linear-to-b from-primary/60 to-primary text-transparent bg-clip-text">
         {children}
       </h1>
     ),
