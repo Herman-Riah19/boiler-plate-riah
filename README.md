@@ -1,81 +1,189 @@
-# Turborepo starter
+# 🧠 Boiler Plate Riah
 
-This is an official starter Turborepo.
+A modern **Next.js** documentation boilerplate designed for creative AI libraries, technical toolkits, and developer documentation.  
+Built with **MDX**, **Tailwind CSS**, and **Shadcn UI**, this boilerplate makes it simple to create visually appealing, performant, and content-driven documentation sites.
 
-## Using this example
+---
 
-Run the following command:
+## 🚀 Features
 
-```sh
-npx create-turbo@latest
-```
+✅ **Next.js 14+ (App Router)** — fast, scalable, and SEO-friendly  
+✅ **MDX support** — write documentation with Markdown + React components  
+✅ **Shadcn/UI components** — elegant design system built on Radix UI  
+✅ **Tailwind CSS** — modern styling with dark mode support  
+✅ **File-based routing** — pages auto-generated from your `docs/` folder  
+✅ **Syntax highlighting** — with `rehype-prism`  
+✅ **Server Components compatible** — supports `next-mdx-remote/rsc`  
+✅ **Deployed-ready** — easily deploy on **Vercel** or **GitHub Pages**
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-pnpm build
-```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+boiler-plate-riah/
+│
+├── app/                # Next.js App Router structure
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── docs/           # MDX documentation pages
+│
+├── components/         # Custom UI components (cards, navbars, MDX blocks)
+├── styles/             # Tailwind CSS configuration
+├── next.config.js      # Next.js configuration
+├── package.json
+└── README.md
 
 ```
-cd my-turborepo
-npx turbo login
+
+---
+
+## ⚙️ Getting Started
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/Herman-Riah19/boiler-plate-riah.git
+cd boiler-plate-riah
+````
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+# or
+pnpm install
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 3️⃣ Run the development server
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+```bash
+npm run dev
 ```
 
-## Useful Links
+Open your browser at 👉 **[http://localhost:3000](http://localhost:3000)**
 
-Learn more about the power of Turborepo:
+---
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## 🧩 Writing Documentation (MDX)
+
+All documentation pages are written in **MDX** and stored inside the `app/docs/` folder.
+
+Example:
+
+````mdx
+---
+title: "Introduction"
+description: "Welcome to the documentation of Artifex.js — the creative AI library."
+---
+
+# 🎨 Welcome to Artifex.js
+
+Artifex.js is a library for **creative AI manipulation**, enabling developers and artists to design,
+blend, and generate art using intelligent models.
+
+> 💡 MDX lets you mix Markdown with React components:
+```tsx
+<Example code="npm install artifex" />
+````
+
+````
+
+---
+
+## 🧰 Configuration
+
+### `next.config.js`
+
+Example setup for MDX + RSC compatibility:
+
+```js
+const nextConfig = {
+  experimental: {
+    serverExternalPackages: [],
+  },
+  transpilePackages: ['next-mdx-remote'],
+};
+
+export default nextConfig;
+````
+
+---
+
+## 🧱 Built With
+
+* [Next.js](https://nextjs.org/) — React framework for production
+* [MDX](https://mdxjs.com/) — Markdown + JSX hybrid format
+* [Tailwind CSS](https://tailwindcss.com/) — utility-first CSS framework
+* [Shadcn/UI](https://ui.shadcn.com/) — modern accessible UI components
+* [Lucide Icons](https://lucide.dev/) — beautiful open-source icons
+
+---
+
+## 🧠 Philosophy
+
+> "Code is the brush, AI is the color, and creativity is the canvas."
+
+This boilerplate aims to **empower developers and digital artists** to build beautiful documentation that showcases their projects — whether it's a creative AI library, a toolkit, or a research project.
+
+---
+
+## 🌐 Deployment
+
+Deploy in one click with **[Vercel](https://vercel.com)**:
+
+```bash
+vercel deploy
+```
+
+Or export static HTML for **GitHub Pages**:
+
+```bash
+npm run build
+npm run export
+```
+
+Then deploy the `out/` folder.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+If you’d like to add features or fix bugs:
+
+1. Fork the repository
+2. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+3. Commit your changes:
+
+   ```bash
+   git commit -m "Add my feature"
+   ```
+4. Push the branch and open a Pull Request
+
+---
+
+## 📜 License
+
+MIT License © 2025 — [Hermann Razafindranaivo](https://github.com/Herman-Riah19)
+
+---
+
+## 💬 Contact
+
+For questions, ideas, or collaboration:
+
+* 🧩 GitHub Issues: [Create an issue](https://github.com/Herman-Riah19/boiler-plate-riah/issues)
+* 📧 Email: *[contact@riah.dev](mailto:contact@riah.dev)* (optional placeholder)
+* 🌍 Website: [https://riah.dev](https://riah.dev) *(optional placeholder)*
+
+---
+
+> 🪄 *Boiler Plate Riah — A creative foundation for modern AI-driven documentation sites.*
+
+```
