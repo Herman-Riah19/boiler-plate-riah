@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getAllBlogs } from "../actions/blog.action";
+import { getAllBlogs } from "@/actions/blog.action";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@repo/ui/components/card";
 
 const PageBlog = async () => {

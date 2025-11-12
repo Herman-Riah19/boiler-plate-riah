@@ -2,8 +2,8 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@repo/ui/components/avatar";
-import DarkTheme from "../dark-theme";
-import { NavbarSheet } from "./navbar-sheet";
+import DarkTheme from "@/components/dark-theme";
+import { NavbarSheet } from "@/components/navbar/navbar-sheet";
 
 export function Navbar() {
 

@@ -1,9 +1,9 @@
 
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Badge } from "@repo/ui/components/badge";
-import { useMDXComponents } from "../../mdx-components";
-import { MDXClientProvider } from "../../components/mdx-client";
-import { loadPost } from "../../lib/mdx";
+import { useMDXComponents } from "@/mdx-components";
+import { MDXClientProvider } from "@/components/mdx-client";
+import { loadPost } from "@/lib/mdx";
 
 export default async function PageDetailBlog({
   params,
