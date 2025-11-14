@@ -23,6 +23,7 @@
   },
   "references": [
     { "path": "packages/ui" },
+    { "path": "apps/api" },
     { "path": "apps/web" },
     { "path": "apps/docs" }
   ],

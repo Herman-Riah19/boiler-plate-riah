@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllBlogs } from "@/actions/blog.action";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@repo/ui/components/card";
 
-const PageBlog = async () => {
+export default async function PageBlog() {
   const blogs = getAllBlogs();
 
   return (
@@ -33,4 +33,3 @@ const PageBlog = async () => {
   );
 };
 
-export default PageBlog;
