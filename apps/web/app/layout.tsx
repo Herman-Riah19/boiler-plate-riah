@@ -1,8 +1,8 @@
 import localFont from "next/font/local";
-import "@repo/ui/globals.css"
-import { Providers } from "../components/theme-provider"
-import type { ReactNode } from 'react'
-import { Navbar } from "../components/navbar/navbar";
+import "@repo/ui/globals.css";
+import { ThemeProviders } from "@/components/theme-provider";
+import type { ReactNode } from "react";
+import { Navbar } from "@/components/navbar/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,17 +16,18 @@ const geistMono = localFont({
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: ReactNode
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased `}
       >
-        <Providers>
+        <ThemeProviders>
           <Navbar />
-          {children}</Providers>
+          {children}
+        </ThemeProviders>
       </body>
     </html>
-  )
+  );
 }

@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
-import { Button } from '@repo/ui/components/button';
-import { Sheet, SheetContent, SheetTrigger } from '@repo/ui/components/sheet';
+import { Button } from '@repo/ui/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@repo/ui/components/ui/sheet';
 import { Menu } from 'lucide-react';
 
 type NavSheetProps = {

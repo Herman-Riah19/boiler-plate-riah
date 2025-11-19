@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { UsersRepository } from "../../prisma/generated/tsed/repositories/UsersRepository";
+import { UsersRepository } from "prisma/generated/tsed";
 import { UserModel } from "prisma/generated/tsed";
 import { ErrorMsg } from "@tsed/schema";
 import bcrypt from "bcrypt";

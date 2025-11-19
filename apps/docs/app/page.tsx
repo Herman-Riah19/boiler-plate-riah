@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogs } from "@/actions/blog.action";
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@repo/ui/components/card";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@repo/ui/components/ui/card";
 
 export default async function PageBlog() {
   const blogs = getAllBlogs();

@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@repo/ui/components/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import DarkTheme from "@/components/dark-theme";
 import { NavbarSheet } from "@/components/navbar/navbar-sheet";
 
@@ -52,16 +52,16 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 flex h-16 z-10 items-center gap-1 border-b bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
+    <header className="sticky top-0 flex h-16 z-10 items-center gap-1 border-b bg-background backdrop-blur supports-backdrop-filter:bg-background/60 px-4 md:px-6">
       <Link
         href="/"
         className="flex items-center gap-6 text-lg font-semibold md:text-base w-full"
       >
         <Avatar>
           <AvatarImage src="/assets/logo.jpg" />
-          <AvatarFallback>Mada Web Masters</AvatarFallback>
+          <AvatarFallback>Riah</AvatarFallback>
         </Avatar>
-        <span className="font-semibold sm:hidden md:block">Mada Web Masters</span>
+        <span className="font-semibold sm:hidden md:block">Riah</span>
       </Link>
 
       <NavbarSheet pages={pages} />

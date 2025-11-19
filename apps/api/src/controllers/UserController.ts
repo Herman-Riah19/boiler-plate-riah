@@ -29,7 +29,7 @@ export class UserController {
   }
 
   @Get("/")
-  @Summary("Filter posts by title or content")
+  @Summary("Filter user by name or content")
   @(Returns(200, Array).Of(UserModel).Description("Return a list of User"))
   @Intercept(UserInterceptor)
   getAll() {
