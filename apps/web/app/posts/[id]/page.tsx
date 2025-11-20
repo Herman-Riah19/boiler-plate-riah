@@ -1,5 +1,5 @@
 import { PostServices } from "@/services/postServices";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@repo/ui/components/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@repo/ui/components/ui/card";
 import * as React from "react";
 
 export interface IPagePostByIdProps {

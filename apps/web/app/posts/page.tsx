@@ -1,12 +1,12 @@
-import { Badge } from "@repo/ui/components/badge";
+import { Badge } from "@repo/ui/components/ui/badge";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
-} from "@repo/ui/components/card";
-import { Button } from "@repo/ui/components/button";
+} from "@repo/ui/components/ui/card";
+import { Button } from "@repo/ui/components/ui/button";
 import { PostServices } from "@/services/postServices";
 import Link from "next/link";
 
