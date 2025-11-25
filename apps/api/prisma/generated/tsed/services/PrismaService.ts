@@ -5,7 +5,7 @@ import { PrismaClient } from "../client/index.js";
 @Injectable()
 export class PrismaService extends PrismaClient implements OnInit, OnDestroy {
   @Inject()
-  protected logger: Logger;
+  protected logger!: Logger;
 
   constructor(@Configuration() settings: Configuration) {
     super(settings.get('prisma'));

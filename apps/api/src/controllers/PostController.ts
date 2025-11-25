@@ -24,6 +24,7 @@ export class PostController {
   }
 
   @Post("/")
+  @Returns(201, PostModel)
   async createNewPost(
     @BodyParams()
     data: CreatePostDto
@@ -47,6 +48,7 @@ export class PostController {
   }
 
   @Put("/:id")
+  @Returns(200, PostModel)
   async updatePost(
     @PathParams("id") id: string,
     @BodyParams() @Groups("update") data: UpdatePostDto

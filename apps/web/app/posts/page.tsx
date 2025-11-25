@@ -15,10 +15,6 @@ export default async function Home() {
 
   return (
     <div className="p-8 space-y-4">
-      <div className="flex gap-4">
-        <Button variant="destructive">Delete</Button>
-        <Button>Delete</Button>
-      </div>
 
       <div className="grid grid-cols-3 gap-4">
         {posts &&
