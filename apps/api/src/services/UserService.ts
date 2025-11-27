@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { UsersRepository } from "prisma/generated/tsed";
-import { UserModel } from "prisma/generated/tsed";
+import { UsersRepository } from "prisma/generated";
+import { UserModel } from "prisma/generated";
 import { ErrorMsg } from "@tsed/schema";
 import bcrypt from "bcrypt";
 import { Injectable, Intercept } from "@tsed/di";
@@ -53,9 +53,6 @@ export class UserService extends UsersRepository {
     return this.findUnique({
       where: {
         email: auth.email
-      },
-      include: {
-        posts: true
       }
     })
   }

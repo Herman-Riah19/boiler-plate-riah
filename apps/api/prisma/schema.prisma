@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 generator tsed {
-  provider           = "tsed-prisma"
-  output             = "../prisma/generated/tsed"
+  provider = "tsed-prisma"
+  output   = "./generated"
 }
 
 datasource db {
@@ -18,34 +12,393 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============ AUTH & ORGANIZATION ============
+
+model Organization {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Organization unique identifier")
+  id            String   @id @default(cuid())
+
+  name          String
+
+  /// @TsED.Description("URL or key of the organization logo")
+  logo          String?
+  description   String?
+
+  members       Member[]
+  contracts     Contract[]
+  templates     ContractTemplate[]
+  wallets       Wallet[]
+  auditLogs     AuditLog[]
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+  slug          String   @unique
+}
+
 model User {
   /// @TsED.Groups("!creation")
-  /// Comment
-  id        String     @default(cuid()) @id
+  /// @TsED.Description("User unique identifier")
+  id            String     @default(cuid()) @id
+
   /// @TsED.Email()
   /// @TsED.Description("User email. This email must be unique!")
-  email     String  @unique
-  name      String?
-  password  String?
-  posts     Post[]
+  email         String  @unique
+
+  name          String?
+
+  /// @TsED.Description("Hashed user password")
+  /// @TsED.Groups("!read")
+  password      String?
+  avatar        String?
+
+  members       Member[]
+  signatures    Signature[]
+  auditLogs     AuditLog[]
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
 }
 
-model Post {
-  id          Int      @default(autoincrement()) @id
-  title       String
-  content     String?
-  published   Boolean? @default(false)
-  author      User?    @relation(fields: [authorId], references: [id])
-  authorId    String?
-  categorie   Categorie? @relation(fields: [categorieId], references: [id])
-  categorieId Int?
+model Member {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Member unique identifier")
+  id            String   @id @default(cuid())
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  userId        String
+  organizationId String
+
+  /// @TsED.Description("Role of the member within the organization")
+  role          Role     @default(VIEWER)
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, organizationId])
 }
 
-model Categorie {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts Post[] 
+enum Role {
+  ADMIN
+  EDITOR
+  SIGNER
+  VIEWER
+}
+
+// ============ SMART CONTRACTS ============
+
+model Contract {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Contract unique identifier")
+  id            String   @id @default(cuid())
+  organizationId String
+
+  title         String
+
+  /// @TsED.Description("Contract description")
+  description   String?
+  status        ContractStatus @default(DRAFT)
+
+  templateId    String?
+  template      ContractTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  /// @TsED.Description("Contract content (JSON with variables)")
+  content       String   // JSON avec variables
+
+  /// @TsED.Description("Values for dynamic parameters")
+  variables     Json     // Valeurs des paramètres dynamiques
+
+  version       Int      @default(1)
+
+  // Blockchain
+  /// @TsED.Description("Blockchain chain id for deployment")
+  chainId       Int?  
+
+  /// @TsED.Description("Deployed smart contract address")
+  smartContractAddress String?
+
+  /// @TsED.Description("Generated smart contract code (Solidity)")
+  smartContractCode String? // Solidity code généré
+  deploymentTxHash String?
+
+  gasEstimate   BigInt?
+  gasCost       String?  // En USD
+
+  // Signataires
+  requiredSigners Int @default(1)
+  signatures    Signature[]
+
+  // Exécution
+  executionCondition String? // JSON condition
+  executedAt    DateTime?
+  executionTxHash String?
+
+  // Fichiers
+  attachments   Attachment[]
+
+  // Audit
+  auditLogs     AuditLog[]
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING_REVIEW
+  PENDING_SIGNATURE
+  SIGNED
+  EXECUTED
+  ARCHIVED
+  REJECTED
+  CANCELLED
+}
+
+model ContractTemplate {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Template unique identifier")
+  id            String   @id @default(cuid())
+  organizationId String
+
+  name          String
+  description   String?
+  category      String   // "Finance", "RealEstate", "Supply Chain", etc.
+
+  /// @TsED.Description("Template content (HTML/JSON)")
+  content       String   // Template HTML/JSON
+
+  /// @TsED.Description("Definition of template variables")
+  variables     Json     // Définition des paramètres
+
+  isPublic      Boolean  @default(false)
+
+  contracts     Contract[]
+  versions      TemplateVersion[]
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name])
+}
+
+model TemplateVersion {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("TemplateVersion unique identifier")
+  id            String   @id @default(cuid())
+  templateId    String
+
+  version       Int
+
+  /// @TsED.Description("Version content")
+  content       String
+  changelog     String?
+
+  template      ContractTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+
+  @@unique([templateId, version])
+}
+
+// ============ SIGNATURES ============
+
+model Signature {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Signature unique identifier")
+  id            String   @id @default(cuid())
+  contractId    String
+  userId        String
+
+  status        SignatureStatus @default(PENDING)
+
+  /// @TsED.Description("EIP-712 signature data")
+  signatureData String?  // EIP-712 signature
+  signedAt      DateTime?
+
+  contract      Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+
+  @@unique([contractId, userId])
+}
+
+enum SignatureStatus {
+  PENDING
+  SIGNED
+  REJECTED
+}
+
+// ============ WALLETS & BLOCKCHAIN ============
+
+model Wallet {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Wallet unique identifier")
+  id            String   @id @default(cuid())
+  organizationId String
+
+  /// @TsED.Description("Blockchain address of the wallet")
+  address       String   @unique
+
+  /// @TsED.Description("Chain ID for the wallet")
+  chainId       Int
+
+  label         String?
+
+  isDefault     Boolean  @default(false)
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+
+  @@unique([organizationId, address])
+}
+
+model BlockchainTransaction {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("BlockchainTransaction unique identifier")
+  id            String   @id @default(cuid())
+  contractId    String?
+
+  txHash        String   @unique
+
+  /// @TsED.Description("Chain ID where the transaction took place")
+  chainId       Int
+  from          String
+  to            String?
+
+  status        TxStatus @default(PENDING)
+
+  gasUsed       BigInt?
+  gasCost       String?
+
+  blockNumber   BigInt?
+  confirmations Int      @default(0)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
+}
+
+enum TxStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+// ============ FILES & ATTACHMENTS ============
+
+model Attachment {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Attachment unique identifier")
+  id            String   @id @default(cuid())
+  contractId    String
+
+  filename      String
+
+  /// @TsED.Description("Storage URL for the file (Supabase/S3)")
+  fileUrl       String   // Supabase/S3
+
+  /// @TsED.Description("MIME type of the file")
+  mimeType      String
+  size          Int
+
+  contract      Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+}
+
+// ============ AUDIT & LOGS ============
+
+model AuditLog {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("AuditLog unique identifier")
+  id              String   @id @default(cuid())
+  contractId      String
+  userId          String
+  organizationId  String
+
+  action          AuditAction
+  details         Json?
+
+  contract        Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt       DateTime @default(now())
+}
+
+enum AuditAction {
+  CONTRACT_CREATED
+  CONTRACT_UPDATED
+  CONTRACT_DELETED
+  CONTRACT_SIGNED
+  CONTRACT_EXECUTED
+  CONTRACT_REJECTED
+  SIGNATURE_REQUESTED
+  SIGNATURE_COMPLETED
+  DEPLOYMENT_STARTED
+  DEPLOYMENT_SUCCESS
+  DEPLOYMENT_FAILED
+}
+
+model SystemConfig {
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("SystemConfig unique identifier")
+  id            String   @id @default(cuid())
+
+  key           String   @unique
+  value         Json
+
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Creation timestamp")
+  createdAt     DateTime @default(now())
+  /// @TsED.Groups("!creation")
+  /// @TsED.Description("Last update timestamp")
+  updatedAt     DateTime @updatedAt
 }

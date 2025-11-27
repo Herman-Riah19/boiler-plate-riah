@@ -7,9 +7,8 @@ import { UserModel } from "../models/index.js";
 
 @Injectable()
 export class UsersRepository {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  @Inject()
+  protected prisma: PrismaService;
 
   get collection() {
     return this.prisma.user

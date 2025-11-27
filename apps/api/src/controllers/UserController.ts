@@ -1,6 +1,6 @@
 import { Controller, Inject, Intercept } from "@tsed/di";
 import { BodyParams } from "@tsed/platform-params";
-import { UserModel } from "prisma/generated/tsed/";
+import { UserModel } from "prisma/generated";
 import { Get, Groups, Post, Returns, Summary } from "@tsed/schema";
 import { UserCreateDto, UserLoginDto } from "src/validators/UserDto";
 import { UserService } from "src/services/UserService";
