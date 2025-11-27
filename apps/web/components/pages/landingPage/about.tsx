@@ -3,76 +3,63 @@ import { ArrowRight } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@repo/ui/components/ui/card";
 import { Typography } from "@repo/ui/components/ui/typography";
 import { Button } from "@repo/ui/components/ui/button";
+import { Badge } from "@repo/ui/components/ui/badge";
 
 export function About() {
   return (
-    <Card className="justify-center m-2">
-      <CardHeader>
-        <ul className="flex">
-          <li className="p-2 border-r-2">
-            <Typography
-              variant="h2"
-              color="secondary"
-              className="capitalize bg-linear-to-b from-primary/60 to-primary text-transparent bg-clip-text"
-            >
-              Generate
-            </Typography>
-          </li>
-          <li className="p-2 border-r-2">
-            <Typography
-              variant="h2"
-              color="secondary"
-              className="capitalize bg-linear-to-b from-primary/60 to-primary text-transparent bg-clip-text"
-            >
-              Change
-            </Typography>
-          </li>
-          <li className="p-2 border-r-2">
-            <Typography
-              variant="h2"
-              color="secondary"
-              className="capitalize bg-linear-to-b from-primary/60 to-primary text-transparent bg-clip-text"
-            >
-              Upscale
-            </Typography>
-          </li>
-          <li className="p-2 border-r-2">
-            <Typography
-              variant="h2"
-              color="secondary"
-              className="capitalize bg-linear-to-b from-primary/60 to-primary text-transparent bg-clip-text"
-            >
-              Structure
-            </Typography>
-          </li>
-        </ul>
-      </CardHeader>
+    <div className="relative min-h-screen flex items-center justify-center">
 
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2 gap-2">
-          <div className="w-full">
-            <Typography variant="h6" color="primary" className="text-justify">
-              Midas Ai is the generative AI Image to enhance the groth of your creativity and you can access for more than ressource of the differentes image.
+      <Card className="z-10 w-full max-w-4xl mx-4 p-8">
+        <CardHeader className="flex justify-center">
+          <ul className="flex gap-3">
+            {["Déployer", "Auditer", "Surveiller", "Gouverner"].map((t) => (
+              <Badge key={t} >{t}</Badge>
+            ))}
+          </ul>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex flex-col items-center text-center gap-6 py-6">
+            <Typography
+              variant="h2"
+              color="secondary"
+              className="capitalize text-4xl md:text-5xl font-bold bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text"
+            >
+              Midas Contract Manager
             </Typography>
-            <Typography variant="h6" color="primary" className="text-justify">
-              Powered by advanced artificial intelligence, our application offers an intuitive and creative experience, ideal for artists, designers, marketers, and all digital art enthusiasts.
+
+            <Typography
+              variant="h6"
+              color="primary"
+              className="max-w-2xl text-base md:text-lg text-justify md:text-center"
+            >
+              Midas Contract Manager — plateforme de gestion de smart contracts
+              pour entreprises. Déployez, gérez et surveillez vos contrats
+              blockchain avec sécurité, traçabilité et conformité.
             </Typography>
-            <div className="mt-1 m-1">
-              <Button variant="secondary" className="flex gap-4">
-                Start
+
+            <Typography
+              variant="h6"
+              color="primary"
+              className="max-w-2xl text-base md:text-lg text-justify md:text-center"
+            >
+              Fonctionnalités clés : gestion des versions, audits intégrés,
+              journalisation des événements, contrôles d'accès et déploiement
+              multi-réseaux pour les environnements d'entreprise.
+            </Typography>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+              <Button variant="secondary" className="flex items-center gap-2">
+                Commencer
                 <ArrowRight />
+              </Button>
+              <Button variant="ghost" className="flex items-center gap-2">
+                En savoir plus
               </Button>
             </div>
           </div>
-          <div
-            className="h-[30vw] w-full rounded-lg sm:hidden md:block"
-            style={{
-              background:
-                "url('/image/galaxy.png') no-repeat top center / cover",
-            }}
-          ></div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

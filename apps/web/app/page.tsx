@@ -1,3 +1,4 @@
+"use client";
 import { About } from '@/components/pages/landingPage/about';
 import { FAQ } from '@/components/pages/landingPage/faq';
 import { Feature } from '@/components/pages/landingPage/feature';
