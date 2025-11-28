@@ -1,5 +1,5 @@
 import { Controller, Inject, Intercept } from "@tsed/di";
-import { BodyParams } from "@tsed/platform-params";
+import { BodyParams, PathParams } from "@tsed/platform-params";
 import { UserModel } from "prisma/generated";
 import { Get, Groups, Post, Returns, Summary, Title, Description } from "@tsed/schema";
 import { UserCreateDto, UserLoginDto } from "src/validators/UserDto";
@@ -42,5 +42,22 @@ export class UserController {
   @Intercept(UserInterceptor)
   getAll() {
     return this.service.findMany();
+  }
+
+
+  @Get("/:id")
+  @Title("Get User by ID")
+  @Summary("Get a single user by its unique ID")
+  @Description("This endpoint retrieves a single user by their unique identifier.")
+  @Returns(200, UserModel)
+  @Intercept(UserInterceptor)
+  getUserById(
+    @PathParams("id") id: string
+  ) {
+    return this.service.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 }

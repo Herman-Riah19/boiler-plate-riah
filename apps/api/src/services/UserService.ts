@@ -9,6 +9,8 @@ import { UserInterceptor } from "src/interceptors/userInterceptor";
 
 @Injectable()
 export class UserService extends UsersRepository {
+  
+  @Intercept(UserInterceptor)
   async create(args: Prisma.UserCreateArgs): Promise<UserModel> {
     const data = args.data;
     const existUser = await this.findUnique({
@@ -50,11 +52,12 @@ export class UserService extends UsersRepository {
 
     if(!isPasswordValid) throw ErrorMsg({ error: "Invalid Passord"})
 
-    return this.findUnique({
+    const user = await this.findUnique({
       where: {
         email: auth.email
       }
-    })
+    });
+    return this.deserialize<UserModel>(user!);
   }
 
   private async isPasswordValid(

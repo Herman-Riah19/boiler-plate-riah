@@ -2,7 +2,7 @@ import {
   Interceptor,
   InterceptorContext,
   InterceptorMethods,
-  InterceptorNext
+  InterceptorNext,
 } from "@tsed/di";
 import { Logger } from "@tsed/logger";
 
@@ -24,13 +24,13 @@ export class UserInterceptor implements InterceptorMethods {
   private sanitize(data: any): any {
     if (!data) return data;
 
-    // If array => sanitize each element
     if (Array.isArray(data)) {
       return data.map((item) => this.sanitize(item));
     }
 
-    // If object => remove password and sanitize nested objects
     if (typeof data === "object") {
+      if (data instanceof Date) return data;
+
       const clone: any = { ...data };
 
       // remove password
@@ -41,8 +41,7 @@ export class UserInterceptor implements InterceptorMethods {
       // sanitize nested objects
       for (const key of Object.keys(clone)) {
         const value = clone[key];
-
-        if (typeof value === "object") {
+        if (typeof value === "object" && value !== null) {
           clone[key] = this.sanitize(value);
         }
       }
