@@ -5,42 +5,43 @@ import type { Relation } from "@tsed/core";
 
 export class AttachmentModel implements Attachment {
   @Property(String)
+  @Required()
   @Groups("!creation")
   @Description("Attachment unique identifier")
-  @Required()
-  id!: string;
+  id: string;
 
   @Property(String)
   @Required()
-  contractId!: string;
+  contractId: string;
 
   @Property(String)
   @Required()
-  filename!: string;
+  filename: string;
 
   @Property(String)
   @Required()
   @Description("Storage URL for the file (Supabase/S3)")
-  fileUrl!: string;
+  fileUrl: string;
 
   @Property(String)
   @Required()
   @Description("MIME type of the file")
-  mimeType!: string;
+  mimeType: string;
 
   @Property(Number)
   @Integer()
   @Required()
-  size!: number;
+  size: number;
 
   @Property(() => ContractModel)
   @Required()
-  contract!: Relation<ContractModel>;
+  contract: Relation<ContractModel>;
 
   @Property(Date)
   @Format("date-time")
   @Required()
   @Groups("!creation")
   @Description("Creation timestamp")
-  createdAt!: Date;
+  createdAt: Date;
 }
+

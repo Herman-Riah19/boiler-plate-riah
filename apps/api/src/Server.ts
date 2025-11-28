@@ -1,21 +1,30 @@
-import {join} from "node:path";
-import {Configuration} from "@tsed/di";
-import {application} from "@tsed/platform-http";
+import { join } from "node:path";
+import { Configuration, Inject } from "@tsed/di";
+import { PlatformApplication } from "@tsed/platform-http";
 import "@tsed/platform-log-request"; // remove this import if you don&#x27;t want log request
 import "@tsed/platform-express"; // /!\ keep this import
 import "@tsed/ajv";
-import {config} from "./config/index.js";
+import "@tsed/swagger";
+import { config } from "./config/index.js";
 import * as rest from "./controllers/index.js";
+import cookieParser from "cookie-parser";
+import compress from "compression";
+import cors from "cors";
+import methodOverride from "method-override";
 
 @Configuration({
   ...config,
   acceptMimes: ["application/json"],
   httpPort: process.env.PORT || 8083,
   httpsPort: false, // CHANGE
+  swagger: [
+    {
+      path: "/v1/api-docs",
+      doc: "api-docs",
+    },
+  ],
   mount: {
-    "/api": [
-      ...Object.values(rest)
-    ]
+    "/api": [...Object.values(rest)],
   },
   middlewares: [
     "cors",
@@ -23,15 +32,27 @@ import * as rest from "./controllers/index.js";
     "compression",
     "method-override",
     "json-parser",
-    { use: "urlencoded-parser", options: { extended: true }}
+    { use: "urlencoded-parser", options: { extended: true } },
   ],
   views: {
     root: join(process.cwd(), "../views"),
     extensions: {
-      ejs: "ejs"
-    }
-  }
+      ejs: "ejs",
+    },
+  },
 })
 export class Server {
-  protected app = application();
+  @Inject()
+  app!: PlatformApplication;
+
+  @Configuration()
+  settings!: Configuration;
+
+  $beforeRoutesInit(): void {
+    this.app
+      .use(cors())
+      .use(cookieParser())
+      .use(compress({}))
+      .use(methodOverride());
+  }
 }

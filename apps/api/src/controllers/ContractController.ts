@@ -1,19 +1,27 @@
 import { Controller, Inject } from "@tsed/di";
 import { PathParams, BodyParams } from "@tsed/platform-params";
-import { Delete, Get, Groups, Post, Put } from "@tsed/schema";
+import { Delete, Get, Groups, Post, Put, Title, Summary, Description } from "@tsed/schema";
+import { Docs } from "@tsed/swagger";
 import { ContractModel, ContractsRepository } from "prisma/generated";
 import { ContractDto } from "src/validators/ContractDto";
 
 @Controller("/contracts")
+@Docs("api-docs")
 export class ContractController {
   constructor(@Inject() private contractService: ContractsRepository) {}
 
   @Get("/")
+  @Title("Get All Contracts")
+  @Summary("Retrieve all contracts")
+  @Description("Returns a list of all contracts in the system.")
   get() {
     return this.contractService.findMany();
   }
 
   @Get("/:id")
+  @Title("Get Contract by ID")
+  @Summary("Retrieve a contract by its ID")
+  @Description("Returns a single contract based on the provided ID.")
   async getPostById(
     @PathParams("id") id: string
   ): Promise<ContractModel | null> {
@@ -25,6 +33,9 @@ export class ContractController {
   }
 
   @Post("/")
+  @Title("Create New Contract")
+  @Summary("Create a new contract")
+  @Description("Creates a new contract with the provided details.")
   async createNewPost(
     @BodyParams()
     contract: ContractDto
@@ -52,6 +63,9 @@ export class ContractController {
   }
 
   @Put("/:id")
+  @Title("Update Contract")
+  @Summary("Update an existing contract")
+  @Description("Updates the contract with the specified ID using the provided data.")
   async updatePost(
     @PathParams("id") id: string,
     @BodyParams() @Groups("update") contract: ContractModel
@@ -69,6 +83,9 @@ export class ContractController {
   }
 
   @Delete("/:id")
+  @Title("Delete Contract")
+  @Summary("Delete a contract by ID")
+  @Description("Removes the contract with the specified ID from the system.")
   async deletePost(@PathParams("id") id: string): Promise<ContractModel> {
     return this.contractService.delete({
       where: {

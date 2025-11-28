@@ -1,0 +1,90 @@
+import { Controller, Inject } from "@tsed/di";
+import { BodyParams, PathParams } from "@tsed/platform-params";
+import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
+import { Docs } from "@tsed/swagger";
+import { AuditLogModel, AuditLogsRepository } from "prisma/generated";
+
+@Controller("/AuditLogs")
+@Docs("api-docs")
+export class AuditLogController {
+    constructor(@Inject() private AuditLogService: AuditLogsRepository) {}
+
+    @Get("/")
+    @Title("Get All Audit Logs")
+    @Summary("Retrieve all audit logs.")
+    @Description("Returns a list of audit logs stored in the system.")
+    @(Returns(200, Array).Of(AuditLogModel))
+    getAllAuditLogs() {
+        return this.AuditLogService.findMany();
+    }
+
+    @Get("/:id")
+    @Title("Get Audit Log")
+    @Summary("Retrieve an audit log by ID.")
+    @Description("Returns the audit log matching the provided ID or null if not found.")
+    async getAuditLogById(
+        @PathParams("id") id: string,
+    ): Promise<AuditLogModel | null> {
+        return this.AuditLogService.findUnique({
+            where: {
+                id: id,
+            },
+        });
+    }
+
+    @Post("/")
+    @Title("Create Audit Log")
+    @Summary("Create a new audit log entry.")
+    @Description("Creates and returns a new audit log record with provided data.")
+    @Returns(201, AuditLogModel)
+    async createAuditLog(
+        @BodyParams() data: AuditLogModel,
+    ): Promise<AuditLogModel> {
+        return await this.AuditLogService.create({
+            data: {
+                contractId: data.contractId,
+                userId: data.userId,
+                organizationId: data.organizationId,
+                action: data.action,
+                details: data.details ?? null,
+            },
+        });
+    }
+
+    @Put("/:id")
+    @Title("Update Audit Log")
+    @Summary("Update an existing audit log.")
+    @Description("Updates the audit log identified by ID with the provided fields and returns the updated record.")
+    @Returns(200, AuditLogModel)
+    async updateAuditLog(
+        @PathParams("id") id: string,
+        @BodyParams() @Groups("update") data: AuditLogModel,
+    ): Promise<AuditLogModel> {
+        return this.AuditLogService.update({
+            where: {
+                id: id,
+            },
+            data: {
+                contractId: data.contractId,
+                userId: data.userId,
+                organizationId: data.organizationId,
+                action: data.action,
+                details: data.details,
+            },
+        });
+    }
+
+    @Delete("/:id")
+    @Title("Delete Audit Log")
+    @Summary("Delete an audit log by ID.")
+    @Description("Deletes the audit log matching the provided ID and returns the deleted record.")
+    async deleteAuditLog(
+        @PathParams("id") id: string,
+    ): Promise<AuditLogModel> {
+        return this.AuditLogService.delete({
+            where: {
+                id: id,
+            },
+        });
+    }
+}

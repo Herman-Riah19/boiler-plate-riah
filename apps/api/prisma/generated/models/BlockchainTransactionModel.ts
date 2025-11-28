@@ -7,62 +7,63 @@ export class BlockchainTransactionModel implements BlockchainTransaction {
   @Required()
   @Groups("!creation")
   @Description("BlockchainTransaction unique identifier")
-  id!: string;
+  id: string;
 
   @Property(String)
   @Allow(null)
-  contractId!: string | null;
+  contractId: string | null;
 
   @Property(String)
   @Required()
-  txHash!: string;
+  txHash: string;
 
   @Property(Number)
   @Integer()
   @Required()
   @Description("Chain ID where the transaction took place")
-  chainId!: number;
+  chainId: number;
 
   @Property(String)
   @Required()
-  from!: string;
+  from: string;
 
   @Property(String)
   @Allow(null)
-  to!: string | null;
+  to: string | null;
 
   @Required()
   @Enum(TxStatus)
-  status!: TxStatus;
+  status: TxStatus;
 
   @Property(BigInt)
   @Allow(null)
-  gasUsed!: bigint | null;
+  gasUsed: bigint | null;
 
   @Property(String)
   @Allow(null)
-  gasCost!: string | null;
+  gasCost: string | null;
 
   @Property(BigInt)
   @Allow(null)
-  blockNumber!: bigint | null;
+  blockNumber: bigint | null;
 
   @Property(Number)
   @Integer()
   @Required()
-  confirmations!: number;
+  confirmations: number;
 
   @Property(Date)
   @Format("date-time")
   @Required()
   @Groups("!creation")
   @Description("Creation timestamp")
-  createdAt!: Date;
+  createdAt: Date;
 
   @Property(Date)
   @Format("date-time")
   @Required()
   @Groups("!creation")
   @Description("Last update timestamp")
-  updatedAt!: Date;
+  updatedAt: Date;
 }
+

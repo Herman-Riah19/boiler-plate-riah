@@ -13,114 +13,122 @@ export class ContractModel implements Contract {
   @Required()
   @Groups("!creation")
   @Description("Contract unique identifier")
-  id!: string;
+  id: string;
 
   @Property(String)
   @Required()
-  organizationId!: string;
+  organizationId: string;
+
   @Property(String)
   @Required()
-  title!: string;
+  title: string;
 
   @Property(String)
   @Allow(null)
   @Description("Contract description")
-  description!: string | null;
+  description: string | null;
 
   @Required()
   @Enum(ContractStatus)
-  status!: ContractStatus;
+  status: ContractStatus;
 
   @Property(String)
   @Allow(null)
-  templateId!: string | null;
+  templateId: string | null;
 
   @Property(() => ContractTemplateModel)
   @Allow(null)
-  template!: Relation<ContractTemplateModel> | null;
+  template: Relation<ContractTemplateModel> | null;
 
   @Property(String)
   @Required()
   @Description("Contract content (JSON with variables)")
-  content!: string;
+  content: string;
 
   @Property(Object)
   @Required()
   @Description("Values for dynamic parameters")
-  variables!: any;
+  variables: any;
 
   @Property(Number)
   @Integer()
   @Required()
-  version!: number;
+  version: number;
 
   @Property(Number)
   @Integer()
   @Allow(null)
   @Description("Blockchain chain id for deployment")
-  chainId!: number | null;
+  chainId: number | null;
 
   @Property(String)
   @Allow(null)
   @Description("Deployed smart contract address")
-  smartContractAddress!: string | null;
+  smartContractAddress: string | null;
 
   @Property(String)
   @Allow(null)
   @Description("Generated smart contract code (Solidity)")
-  smartContractCode!: string | null;
+  smartContractCode: string | null;
 
   @Property(String)
   @Allow(null)
-  deploymentTxHash!: string | null;
+  deploymentTxHash: string | null;
 
   @Property(BigInt)
   @Allow(null)
-  gasEstimate!: bigint | null;
-  
+  gasEstimate: bigint | null;
+
   @Property(String)
   @Allow(null)
-  gasCost!: string | null;
+  gasCost: string | null;
 
   @Property(Number)
   @Integer()
-  requiredSigners!: number;
+  @Required()
+  requiredSigners: number;
 
   @CollectionOf(() => SignatureModel)
-  signatures!: SignatureModel[];
+  @Required()
+  signatures: SignatureModel[];
 
   @Property(String)
   @Allow(null)
-  executionCondition!: string | null;
+  executionCondition: string | null;
 
   @Property(Date)
   @Format("date-time")
   @Allow(null)
-  executedAt!: Date | null;
+  executedAt: Date | null;
+
   @Property(String)
   @Allow(null)
-  executionTxHash!: string | null;
+  executionTxHash: string | null;
 
   @CollectionOf(() => AttachmentModel)
-  attachments!: AttachmentModel[];
+  @Required()
+  attachments: AttachmentModel[];
 
   @CollectionOf(() => AuditLogModel)
-  auditLogs!: AuditLogModel[];
+  @Required()
+  auditLogs: AuditLogModel[];
 
   @Property(Date)
   @Format("date-time")
+  @Required()
   @Groups("!creation")
   @Description("Creation timestamp")
-  createdAt!: Date;
+  createdAt: Date;
 
   @Property(Date)
   @Format("date-time")
+  @Required()
   @Groups("!creation")
   @Description("Last update timestamp")
-  updatedAt!: Date;
+  updatedAt: Date;
 
   @Property(() => OrganizationModel)
   @Required()
-  organization!: Relation<OrganizationModel>;
+  organization: Relation<OrganizationModel>;
 }
 
