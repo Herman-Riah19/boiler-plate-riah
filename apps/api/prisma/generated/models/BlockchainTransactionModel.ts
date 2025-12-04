@@ -31,21 +31,27 @@ export class BlockchainTransactionModel implements BlockchainTransaction {
   @Allow(null)
   to: string | null;
 
+  @Property(Number)
+  @Allow(null)
+  value: number | null;
+
   @Required()
   @Enum(TxStatus)
   status: TxStatus;
 
-  @Property(BigInt)
+  @Property(Number)
+  @Integer()
   @Allow(null)
-  gasUsed: bigint | null;
+  gasUsed: number | null;
 
   @Property(String)
   @Allow(null)
   gasCost: string | null;
 
-  @Property(BigInt)
+  @Property(Number)
+  @Integer()
   @Allow(null)
-  blockNumber: bigint | null;
+  blockNumber: number | null;
 
   @Property(Number)
   @Integer()

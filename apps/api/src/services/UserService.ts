@@ -60,6 +60,11 @@ export class UserService extends UsersRepository {
     return this.deserialize<UserModel>(user!);
   }
 
+  async logout(user: UserModel): Promise<void> {
+    
+    return;
+  }
+
   private async isPasswordValid(
     plainPassword: string,
     hashedPassword: string,

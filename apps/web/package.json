@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@repo/api": "*",
     "@repo/contracts": "*",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.1.16",
@@ -19,7 +21,9 @@
     "path": "^0.12.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tailwind-merge": "^3.3.1"
+    "react-hook-form": "^7.68.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

@@ -305,12 +305,14 @@ model BlockchainTransaction {
   from          String
   to            String?
 
+  value         Float?
+
   status        TxStatus @default(PENDING)
 
-  gasUsed       BigInt?
+  gasUsed       Int?
   gasCost       String?
 
-  blockNumber   BigInt?
+  blockNumber   Int?
   confirmations Int      @default(0)
 
   /// @TsED.Groups("!creation")

@@ -1,11 +1,12 @@
 import { Controller, Inject, Intercept } from "@tsed/di";
-import { BodyParams, PathParams } from "@tsed/platform-params";
+import { BodyParams } from "@tsed/platform-params";
 import { UserModel } from "prisma/generated";
 import { Get, Groups, Post, Returns, Summary, Title, Description } from "@tsed/schema";
 import { UserCreateDto, UserLoginDto } from "src/validators/UserDto";
 import { UserService } from "src/services/UserService";
 import { UserInterceptor } from "src/interceptors/userInterceptor";
 import { Docs } from "@tsed/swagger";
+import { UseUserParams } from "src/decorators/useUserParams";
 
 @Controller("/users")
 @Docs("api-docs")
@@ -51,13 +52,16 @@ export class UserController {
   @Description("This endpoint retrieves a single user by their unique identifier.")
   @Returns(200, UserModel)
   @Intercept(UserInterceptor)
-  getUserById(
-    @PathParams("id") id: string
-  ) {
-    return this.service.findUnique({
-      where: {
-        id: id,
-      },
-    });
+  getUserById( @UseUserParams("id") user: UserModel) {
+    return user;
+  }
+
+  @Post("/logout")
+  @Title("User Logout")
+  @Summary("Logout user")
+  @Description("This endpoint allows users to log out.")
+  @Returns(204)
+  async logoutUser(@UseUserParams("id") user: UserModel): Promise<void> {
+    await this.service.logout(user);
   }
 }

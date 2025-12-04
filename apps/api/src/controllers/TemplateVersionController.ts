@@ -7,7 +7,7 @@ import {
   TemplateVersionsRepository,
 } from "prisma/generated";
 
-@Controller("/template-versions")
+@Controller("/templates")
 @Docs("api-docs")
 export class TemplateVersionController {
   constructor(

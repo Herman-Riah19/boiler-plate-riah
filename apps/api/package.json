@@ -10,6 +10,10 @@
     "prisma:migrate": "bunx prisma migrate dev --name init",
     "prisma:generate": "bunx prisma generate"
   },
+  "exports": {
+    "models": "./prisma/generated/model/*.ts",
+    "enums": "./prisma/generated/enums/*.ts"
+  },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@tsed/ajv": "^8.18.2",

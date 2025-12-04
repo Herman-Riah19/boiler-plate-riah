@@ -5,7 +5,9 @@ import { Docs } from "@tsed/swagger";
 import {
   BlockchainTransactionModel,
   BlockchainTransactionsRepository,
+  TxStatus,
 } from "prisma/generated";
+import { CreateBlockchainTransactionDto } from "src/validators/transactionDto";
 
 @Controller("/blockchain-transactions")
 @Docs("api-docs")
@@ -45,17 +47,21 @@ export class BlockchainTransactionController {
   @Summary("Create a new blockchain transaction")
   @Description("This endpoint creates a new blockchain transaction with the provided data.")
   async createBlockchainTransaction(
-    @BodyParams() data: BlockchainTransactionModel,
+    @BodyParams() data: CreateBlockchainTransactionDto,
   ): Promise<BlockchainTransactionModel> {
+    const txHash = "0x" + crypto.randomUUID().replace(/-/g, "");
     return await this.blockchainTransactionService.create({
       data: {
-        txHash: data.txHash,
         from: data.from,
         to: data.to,
         gasUsed: data.gasUsed,
-        chainId: data.chainId,
-        blockNumber: data.blockNumber,
-        contractId: data.contractId,
+        value: data.value,
+        chainId: 1,
+        blockNumber: null,
+        txHash: txHash,
+        status: TxStatus.PENDING,
+        gasCost: data.gasCost,
+        confirmations: 0,
       },
     });
   }
