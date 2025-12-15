@@ -1,27 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@repo/ui/components/ui/button';
-import { Input } from '@repo/ui/components/ui/input';
-import { Textarea } from '@repo/ui/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@repo/ui/components/ui/dialog';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@repo/ui/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
-import { Badge } from '@repo/ui/components/ui/badge';
-import { ScrollArea } from '@repo/ui/components/ui/scroll-area';
-import { ContractServices } from '@/services/contractServices';
-import { Plus, Eye, Edit, Trash2, Play } from 'lucide-react';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@repo/ui/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@repo/ui/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/ui/card";
+import { Badge } from "@repo/ui/components/ui/badge";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { ContractServices } from "@/services/contractServices";
+import { Plus, Eye, Edit, Trash2, Play } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@repo/ui/components/ui/sheet";
+import { FormTextfield, FormTextSelect } from "@repo/ui/components/composable/FormTextfield";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@repo/ui/components/ui/select";
 
 const contractSchema = z.object({
-  name: z.string().min(1, 'Le nom est requis'),
-  description: z.string().min(1, 'La description est requise'),
-  type: z.enum(['ERC20', 'ERC721', 'ERC1155', 'Custom']),
-  sourceCode: z.string().min(1, 'Le code source est requis'),
-  network: z.enum(['mainnet', 'testnet', 'localhost']),
+  name: z.string().min(1, "Le nom est requis"),
+  description: z.string().min(1, "La description est requise"),
+  type: z.enum(["ERC20", "ERC721", "ERC1155", "Custom"]),
+  sourceCode: z.string().min(1, "Le code source est requis"),
+  network: z.enum(["mainnet", "testnet", "localhost"]),
 });
 
 type ContractFormData = z.infer<typeof contractSchema>;
@@ -35,43 +47,32 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
   const form = useForm<ContractFormData>({
     resolver: zodResolver(contractSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      type: 'Custom',
-      sourceCode: '',
-      network: 'testnet',
+      name: "",
+      description: "",
+      type: "Custom",
+      sourceCode: "",
+      network: "testnet",
     },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 overflow-auto"
+      >
+        <FormTextfield
+          form={form}
           name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom du contrat</FormLabel>
-              <FormControl>
-                <Input placeholder="Mon contrat intelligent" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Nom du contrat"
+          placeholder="Mon contrat intelligent"
         />
 
-        <FormField
-          control={form.control}
+        <FormTextfield
+          form={form}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Description du contrat..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Description"
+          placeholder="Description du contrat"
         />
 
         <FormField
@@ -121,29 +122,17 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
+        <FormTextfield
+          form={form}
           name="sourceCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Code source Solidity</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="// pragma solidity ^0.8.0;..."
-                  className="min-h-[200px] font-mono"
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Collez le code source de votre contrat intelligent
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Code source Solidity"
+          placeholder="// pragma solidity ^0.8.0;..."
+          description="Collez le code source de votre contrat intelligent"
+          className="min-h-[200px] font-mono"
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Création...' : 'Créer le contrat'}
+          {loading ? "Création..." : "Créer le contrat"}
         </Button>
       </form>
     </Form>
@@ -158,15 +147,15 @@ export default function ContractsPage() {
   const handleCreateContract = async (data: ContractFormData) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token') || '';
-      const result = await ContractServices.createContract(data, token);
-      
+      const token = localStorage.getItem("token") || "";
+      const result = await ContractServices.createContract(data);
+
       if (result.success) {
         setContracts([...contracts, result.data]);
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating contract:', error);
+      console.error("Error creating contract:", error);
     } finally {
       setLoading(false);
     }
@@ -174,26 +163,31 @@ export default function ContractsPage() {
 
   const handleDeployContract = async (id: string) => {
     try {
-      const token = localStorage.getItem('token') || '';
+      const token = localStorage.getItem("token") || "";
       const result = await ContractServices.deployContract(id, token);
-      
+
       if (result.success) {
-        setContracts(contracts.map(contract => 
-          contract.id === id ? { ...contract, status: 'deployed' } : contract
-        ));
+        setContracts(
+          contracts.map((contract) =>
+            contract.id === id ? { ...contract, status: "deployed" } : contract
+          )
+        );
       }
     } catch (error) {
-      console.error('Error deploying contract:', error);
+      console.error("Error deploying contract:", error);
     }
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-      draft: 'secondary',
-      deployed: 'default',
-      error: 'destructive',
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      draft: "secondary",
+      deployed: "default",
+      error: "destructive",
     };
-    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>;
+    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
   return (
@@ -201,27 +195,29 @@ export default function ContractsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Contrats Intelligents</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Contrats Intelligents
+          </h1>
           <p className="text-gray-600">Gérez vos contrats intelligents</p>
         </div>
-        
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
+
+        <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+          <SheetTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Nouveau contrat
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Créer un nouveau contrat</DialogTitle>
-              <DialogDescription>
+          </SheetTrigger>
+          <SheetContent className="max-w-2xl p-4">
+            <SheetHeader>
+              <SheetTitle>Créer un nouveau contrat</SheetTitle>
+              <SheetDescription>
                 Définissez les caractéristiques de votre contrat intelligent
-              </DialogDescription>
-            </DialogHeader>
+              </SheetDescription>
+            </SheetHeader>
             <ContractForm onSubmit={handleCreateContract} loading={loading} />
-          </DialogContent>
-        </Dialog>
+          </SheetContent>
+        </Sheet>
       </div>
 
       {/* Contracts List */}
@@ -245,18 +241,25 @@ export default function ContractsPage() {
             <ScrollArea className="h-[400px]">
               <div className="space-y-4">
                 {contracts.map((contract) => (
-                  <div key={contract.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={contract.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h4 className="font-medium">{contract.name}</h4>
                         {getStatusBadge(contract.status)}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{contract.description}</p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {contract.description}
+                      </p>
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span>Type: {contract.type}</span>
                         <span>Réseau: {contract.network}</span>
                         {contract.address && (
-                          <span>Adresse: {contract.address.slice(0, 10)}...</span>
+                          <span>
+                            Adresse: {contract.address.slice(0, 10)}...
+                          </span>
                         )}
                       </div>
                     </div>
@@ -267,9 +270,9 @@ export default function ContractsPage() {
                       <Button variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      {contract.status === 'draft' && (
-                        <Button 
-                          variant="outline" 
+                      {contract.status === "draft" && (
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeployContract(contract.id)}
                         >

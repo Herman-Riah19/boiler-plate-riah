@@ -3,17 +3,16 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@repo/ui/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@repo/ui/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -40,7 +39,11 @@ import {
 } from "@repo/ui/components/ui/tabs";
 import { BlockchainServices } from "@/services/blockchainServices";
 import { Plus, Eye, RefreshCw, ExternalLink } from "lucide-react";
-import { TransactionFormData, transactionSchema } from "@/validators/transaction-validator";
+import {
+  TransactionFormData,
+  transactionSchema,
+} from "@/validators/transaction-validator";
+import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
 
 interface TransactionFormProps {
   onSubmit: (data: TransactionFormData) => void;
@@ -66,87 +69,47 @@ function TransactionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 m-4">
+        <FormTextfield
+          form={form}
           name="from"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Adresse de locataire</FormLabel>
-              <FormControl>
-                <Input placeholder="0x..." {...field} />
-              </FormControl>
-              <FormDescription>
-                Adresse Ethereum ou compatible EVM
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="to"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Adresse de destination</FormLabel>
-              <FormControl>
-                <Input placeholder="0x..." {...field} />
-              </FormControl>
-              <FormDescription>
-                Adresse Ethereum ou compatible EVM
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Adresse de locataire"
+          placeholder="0x..."
+          description="Adresse Ethereum ou compatible EVM"
         />
 
-        <FormField
-          control={form.control}
+        <FormTextfield
+          form={form}
+          name="to"
+          label="Adresse de destination"
+          placeholder="0x..."
+          description="Adresse Ethereum ou compatible EVM"
+        />
+
+        <FormTextfield
+          form={form}
+          type="number"
           name="value"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Value</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="1"
-                  {...field}
-                  value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Valeur"
+          placeholder="1"
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
+          <FormTextfield
+            form={form}
+            type="number"
             name="gasUsed"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gas Limit</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="21000" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Gas Limit"
+            placeholder="21000"
           />
 
-          <FormField
-            control={form.control}
+          <FormTextfield
+            form={form}
+            type="number"
             name="gasCost"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gas Price (Gwei)</FormLabel>
-                <FormControl>
-                  <Input type="number" step="0.1" placeholder="20" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Gas Price (Gwei)"
+            placeholder="20"
+            step="0.1"
           />
         </div>
 
@@ -164,7 +127,7 @@ export default function TransactionsPage() {
   const [networkInfo, setNetworkInfo] = useState<any>(null);
   const [gasPrice, setGasPrice] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [SheetOpen, setSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("transactions");
 
   useEffect(() => {
@@ -209,7 +172,7 @@ export default function TransactionsPage() {
 
       if (result.success) {
         setTransactions([result.data, ...transactions]);
-        setDialogOpen(false);
+        setSheetOpen(false);
       }
     } catch (error) {
       console.error("Error creating transaction:", error);
@@ -256,27 +219,27 @@ export default function TransactionsPage() {
             Actualiser
           </Button>
 
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
+          <Sheet open={SheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Nouvelle transaction
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Créer une transaction</DialogTitle>
-                <DialogDescription>
+            </SheetTrigger>
+            <SheetContent className="max-w-2xl">
+              <SheetHeader>
+                <SheetTitle>Créer une transaction</SheetTitle>
+                <SheetDescription>
                   Envoyez des fonds ou interagissez avec des contrats
-                </DialogDescription>
-              </DialogHeader>
+                </SheetDescription>
+              </SheetHeader>
               <TransactionForm
                 onSubmit={handleCreateTransaction}
                 loading={loading}
                 gasPrice={gasPrice}
               />
-            </DialogContent>
-          </Dialog>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
@@ -333,7 +296,7 @@ export default function TransactionsPage() {
                   <p className="text-gray-500 mb-4">
                     Aucune transaction trouvée
                   </p>
-                  <Button onClick={() => setDialogOpen(true)}>
+                  <Button onClick={() => setSheetOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Créer votre première transaction
                   </Button>
@@ -356,9 +319,7 @@ export default function TransactionsPage() {
                           <div className="flex items-center gap-4 text-sm text-gray-600">
                             <span>De: {formatAddress(tx.from)}</span>
                             <span>À: {formatAddress(tx.to)}</span>
-                            <span className="font-medium">
-                              {tx.value} ETH
-                            </span>
+                            <span className="font-medium">{tx.value} ETH</span>
                           </div>
                           <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                             <span>Block: {tx.blockNumber}</span>
