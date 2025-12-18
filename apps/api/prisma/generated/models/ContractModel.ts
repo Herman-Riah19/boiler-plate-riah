@@ -45,11 +45,6 @@ export class ContractModel implements Contract {
   @Description("Contract content (JSON with variables)")
   content: string;
 
-  @Property(Object)
-  @Required()
-  @Description("Values for dynamic parameters")
-  variables: any;
-
   @Property(Number)
   @Integer()
   @Required()
@@ -75,9 +70,10 @@ export class ContractModel implements Contract {
   @Allow(null)
   deploymentTxHash: string | null;
 
-  @Property(BigInt)
+  @Property(Number)
+  @Integer()
   @Allow(null)
-  gasEstimate: bigint | null;
+  gasEstimate: number | null;
 
   @Property(String)
   @Allow(null)

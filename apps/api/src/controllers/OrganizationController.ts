@@ -3,8 +3,9 @@ import { BodyParams, PathParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { OrganizationModel, OrganizationsRepository } from "prisma/generated";
+import { OrganizationModelDto } from "src/validators/OrganizationDto";
 
-@Controller("/Organization")
+@Controller("/organizations")
 @Docs("api-docs")
 export class OrganizationController {
   constructor(@Inject() private organizationService: OrganizationsRepository) {}
@@ -15,7 +16,14 @@ export class OrganizationController {
   @Summary("Retrieve a list of all organizations")
   @Description("This endpoint returns all organizations in the system.")
   getAllOrganizations() {
-    return this.organizationService.findMany();
+    return this.organizationService.findMany({
+      include: {
+        contracts: true,
+        wallets: true,
+        templates: true,
+        auditLogs: true
+      }
+    });
   }
 
   @Get("/:id")
@@ -37,7 +45,7 @@ export class OrganizationController {
   @Summary("Create a new organization")
   @Description("This endpoint creates a new organization with the provided data.")
   async createNewOrganization(
-    @BodyParams() data: OrganizationModel
+    @BodyParams() data: OrganizationModelDto
   ): Promise<OrganizationModel> {
     return await this.organizationService.create({
       data: {

@@ -33,11 +33,6 @@ export class ContractTemplateModel implements ContractTemplate {
   @Description("Template content (HTML/JSON)")
   content: string;
 
-  @Property(Object)
-  @Required()
-  @Description("Definition of template variables")
-  variables: any;
-
   @Property(Boolean)
   @Required()
   isPublic: boolean;

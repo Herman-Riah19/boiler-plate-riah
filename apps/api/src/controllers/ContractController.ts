@@ -46,7 +46,6 @@ export class ContractController {
         description: contract.description,
         status: contract.status,
         content: contract.content,
-        variables: contract.variables,
         version: contract.version,
         chainId: contract.chainId,
         smartContractAddress: contract.smartContractAddress,

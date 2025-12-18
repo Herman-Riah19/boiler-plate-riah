@@ -26,11 +26,6 @@ export class ContractDto {
   @Description("Contract content (JSON with variables)")
   content!: string;
 
-  @Property(Object)
-  @Required()
-  @Description("Values for dynamic parameters")
-  variables!: any;
-
   @Property(Number)
   @Integer()
   @Required()
@@ -60,10 +55,10 @@ export class ContractDto {
   @Required()
   deploymentTxHash!: string | null;
 
-  @Property(BigInt)
+  @Property(Number)
   @Allow(null)
   @Required()
-  gasEstimate!: bigint | null;
+  gasEstimate!: number | null;
 
   @Property(String)
   @Allow(null)

@@ -119,9 +119,6 @@ model Contract {
   /// @TsED.Description("Contract content (JSON with variables)")
   content       String   // JSON avec variables
 
-  /// @TsED.Description("Values for dynamic parameters")
-  variables     Json     // Valeurs des paramètres dynamiques
-
   version       Int      @default(1)
 
   // Blockchain
@@ -135,7 +132,7 @@ model Contract {
   smartContractCode String? // Solidity code généré
   deploymentTxHash String?
 
-  gasEstimate   BigInt?
+  gasEstimate   Int?
   gasCost       String?  // En USD
 
   // Signataires
@@ -186,9 +183,6 @@ model ContractTemplate {
 
   /// @TsED.Description("Template content (HTML/JSON)")
   content       String   // Template HTML/JSON
-
-  /// @TsED.Description("Definition of template variables")
-  variables     Json     // Définition des paramètres
 
   isPublic      Boolean  @default(false)
 

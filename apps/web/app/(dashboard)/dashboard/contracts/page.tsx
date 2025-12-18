@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@repo/ui/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@repo/ui/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@repo/ui/components/ui/form";
 import {
   Card,
   CardContent,
@@ -25,49 +32,68 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@repo/ui/components/ui/sheet";
-import { FormTextfield, FormTextSelect } from "@repo/ui/components/composable/FormTextfield";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@repo/ui/components/ui/select";
+import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@repo/ui/components/ui/select";
+import { SmartContractSchema } from "@/validators/contract-validator";
+import { OrganizationServices } from "@/services/organizationServices";
 
-const contractSchema = z.object({
-  name: z.string().min(1, "Le nom est requis"),
-  description: z.string().min(1, "La description est requise"),
-  type: z.enum(["ERC20", "ERC721", "ERC1155", "Custom"]),
-  sourceCode: z.string().min(1, "Le code source est requis"),
-  network: z.enum(["mainnet", "testnet", "localhost"]),
-});
-
-type ContractFormData = z.infer<typeof contractSchema>;
+type ContractFormData = z.infer<typeof SmartContractSchema>;
 
 interface ContractFormProps {
   onSubmit: (data: ContractFormData) => void;
   loading?: boolean;
 }
-
 function ContractForm({ onSubmit, loading }: ContractFormProps) {
+  const [organisations, setOrganisations] = useState([]);
   const form = useForm<ContractFormData>({
-    resolver: zodResolver(contractSchema),
+    resolver: zodResolver(SmartContractSchema),
     defaultValues: {
-      name: "",
+      title: "",
       description: "",
-      type: "Custom",
-      sourceCode: "",
-      network: "testnet",
+      status: "DRAFT",
+      content: "",
+      version: 0,
+      chainId: 1,
+      smartContractAddress: undefined,
+      deploymentTxHash: undefined,
+      gasEstimate: undefined,
+      gasCost: undefined,
+      smartContractCode: "",
+      requiredSigners: 0,
+      organizationId: "",
     },
   });
+
+  useEffect(() => {
+    const getOrganisations = async () => {
+      const data = await OrganizationServices.getAllOrganizations();
+      console.log(data)
+      setOrganisations(data)
+    }
+    getOrganisations();
+  }, []);
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 overflow-auto"
+        className="space-y-6 overflow-auto"
       >
+        {/* TITLE */}
         <FormTextfield
           form={form}
-          name="name"
-          label="Nom du contrat"
+          name="title"
+          label="Titre du contrat"
           placeholder="Mon contrat intelligent"
         />
 
+        {/* DESCRIPTION */}
         <FormTextfield
           form={form}
           name="description"
@@ -75,23 +101,47 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
           placeholder="Description du contrat"
         />
 
+        {/* STATUS */}
         <FormField
           control={form.control}
-          name="type"
+          name="status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type de contrat</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un type" />
+                    <SelectValue />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="ERC20">ERC20 (Token)</SelectItem>
-                  <SelectItem value="ERC721">ERC721 (NFT)</SelectItem>
-                  <SelectItem value="ERC1155">ERC1155 (Multi-Token)</SelectItem>
-                  <SelectItem value="Custom">Custom</SelectItem>
+                  <SelectItem value="DRAFT">Draft</SelectItem>
+                  <SelectItem value="PUBLISHED">Published</SelectItem>
+                  <SelectItem value="DEPLOYED">Deployed</SelectItem>
+                  <SelectItem value="ARCHIVED">Archived</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="organizationId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Organization</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {organisations && organisations.map((org) => (
+                    <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -99,37 +149,81 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="network"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Réseau</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un réseau" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="mainnet">Mainnet</SelectItem>
-                  <SelectItem value="testnet">Testnet</SelectItem>
-                  <SelectItem value="localhost">Localhost</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+        {/* VERSION */}
         <FormTextfield
           form={form}
-          name="sourceCode"
-          label="Code source Solidity"
-          placeholder="// pragma solidity ^0.8.0;..."
-          description="Collez le code source de votre contrat intelligent"
-          className="min-h-[200px] font-mono"
+          name="version"
+          label="Version"
+          placeholder="Entrer la version"
+          type="number" />
+
+        {/* CHAIN ID */}
+        <FormTextfield
+          form={form}
+          name="chainId"
+          label="Chain ID"
+          placeholder="Entrer la chain ID"
+          type="number" />
+
+        {/* CONTENT */}
+        <FormTextfield
+          form={form}
+          name="content"
+          label="Description technique"
+          placeholder="Description fonctionnelle du contrat"
         />
+
+        {/* SMART CONTRACT CODE */}
+        <FormTextfield
+          form={form}
+          name="smartContractCode"
+          label="Code source Solidity"
+          placeholder="// pragma solidity ^0.8.0;"
+          className="min-h-[220px] font-mono"
+        />
+
+        {/* SMART CONTRACT ADDRESS */}
+        <FormTextfield
+          form={form}
+          name="smartContractAddress"
+          label="Adresse du smart contract"
+          placeholder="0x..."
+          description="Optionnel – après déploiement"
+        />
+
+        {/* DEPLOYMENT TX HASH */}
+        <FormTextfield
+          form={form}
+          name="deploymentTxHash"
+          label="Transaction de déploiement"
+          placeholder="0x..."
+          description="Optionnel – requis si DEPLOYED"
+        />
+
+        {/* GAS ESTIMATE */}
+        <FormTextfield
+          form={form}
+          name="gasEstimate"
+          label="Gas estimé"
+          placeholder="Entrer la Gas estimé"
+          type="number" />
+
+        {/* GAS COST */}
+        <FormTextfield
+          form={form}
+          name="gasCost"
+          label="Coût du gas"
+          placeholder="ex: 45000000000"
+          description="Optionnel – chaîne numérique"
+        />
+
+        {/* REQUIRED SIGNERS */}
+        <FormTextfield
+          form={form}
+          name="requiredSigners"
+          label="Signataires requis"
+          placeholder="Entrer la Signataires requis"
+          type="number" />
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Création..." : "Créer le contrat"}
@@ -139,6 +233,7 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
   );
 }
 
+
 export default function ContractsPage() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -147,10 +242,10 @@ export default function ContractsPage() {
   const handleCreateContract = async (data: ContractFormData) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token") || "";
+      console.log("form data: ", data.organizationId)
       const result = await ContractServices.createContract(data);
 
-      if (result.success) {
+      if (result) {
         setContracts([...contracts, result.data]);
         setDialogOpen(false);
       }
@@ -163,8 +258,7 @@ export default function ContractsPage() {
 
   const handleDeployContract = async (id: string) => {
     try {
-      const token = localStorage.getItem("token") || "";
-      const result = await ContractServices.deployContract(id, token);
+      const result = await ContractServices.getAllContracts();
 
       if (result.success) {
         setContracts(

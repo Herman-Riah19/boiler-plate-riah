@@ -41,7 +41,7 @@ import { BlockchainServices } from "@/services/blockchainServices";
 import { Plus, Eye, RefreshCw, ExternalLink } from "lucide-react";
 import {
   TransactionFormData,
-  transactionSchema,
+  TransactionSchema,
 } from "@/validators/transaction-validator";
 import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
 
@@ -57,7 +57,7 @@ function TransactionForm({
   gasPrice,
 }: TransactionFormProps) {
   const form = useForm<TransactionFormData>({
-    resolver: zodResolver(transactionSchema),
+    resolver: zodResolver(TransactionSchema),
     defaultValues: {
       from: "",
       to: "",
