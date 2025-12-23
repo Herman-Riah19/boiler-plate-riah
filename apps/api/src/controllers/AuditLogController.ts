@@ -3,6 +3,7 @@ import { BodyParams, PathParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { AuditLogModel, AuditLogsRepository } from "prisma/generated";
+import { AuditLogDto } from "src/validators/AuditLogDto";
 
 @Controller("/AuditLogs")
 @Docs("api-docs")
@@ -38,7 +39,7 @@ export class AuditLogController {
     @Description("Creates and returns a new audit log record with provided data.")
     @Returns(201, AuditLogModel)
     async createAuditLog(
-        @BodyParams() data: AuditLogModel,
+        @BodyParams() data: AuditLogDto,
     ): Promise<AuditLogModel> {
         return await this.AuditLogService.create({
             data: {
@@ -58,7 +59,7 @@ export class AuditLogController {
     @Returns(200, AuditLogModel)
     async updateAuditLog(
         @PathParams("id") id: string,
-        @BodyParams() @Groups("update") data: AuditLogModel,
+        @BodyParams() @Groups("update") data: AuditLogDto,
     ): Promise<AuditLogModel> {
         return this.AuditLogService.update({
             where: {

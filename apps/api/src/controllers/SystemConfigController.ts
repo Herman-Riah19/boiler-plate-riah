@@ -3,6 +3,7 @@ import { BodyParams, PathParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { SystemConfigModel, SystemConfigsRepository } from "prisma/generated";
+import { SystemConfigDto } from "src/validators/SystemConfigDto";
 
 @Controller("/system-configs")
 @Docs("api-docs")
@@ -39,7 +40,7 @@ export class SystemConfigController {
   @Summary("Create a new system configuration")
   @Description("This endpoint creates a new system configuration with the provided data.")
   async createSystemConfig(
-    @BodyParams() data: SystemConfigModel,
+    @BodyParams() data: SystemConfigDto,
   ): Promise<SystemConfigModel> {
     return await this.systemConfigService.create({
       data: {
@@ -56,7 +57,7 @@ export class SystemConfigController {
   @Description("This endpoint updates the system configuration for the specified ID with the provided data.")
   async updateSystemConfig(
     @PathParams("id") id: string,
-    @BodyParams() @Groups("update") data: SystemConfigModel,
+    @BodyParams() @Groups("update") data: SystemConfigDto,
   ): Promise<SystemConfigModel> {
     return this.systemConfigService.update({
       where: {

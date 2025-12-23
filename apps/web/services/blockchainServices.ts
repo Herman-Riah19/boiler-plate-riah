@@ -32,6 +32,13 @@ export class BlockchainServices {
 
     return res.json();
   }
+  
+  static async refreshTransaction(id: string) {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions/${id}`,
+    );
+    return res.json();
+  }
 
   static async getTransactionStatus(id: string) {
     const res = await fetch(

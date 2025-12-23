@@ -3,6 +3,7 @@ import { BodyParams, PathParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { WalletModel, WalletsRepository } from "prisma/generated";
+import { WalletDto } from "src/validators/WalletDto";
 
 @Controller("/wallets")
 @Docs("api-docs")
@@ -38,7 +39,7 @@ export class WalletController {
   @Title("Create Wallet")
   @Summary("Create a new wallet")
   @Description("This endpoint creates a new wallet with the provided data.")
-  async createWallet(@BodyParams() data: WalletModel): Promise<WalletModel> {
+  async createWallet(@BodyParams() data: WalletDto): Promise<WalletModel> {
     return await this.walletService.create({
       data: {
         address: data.address,
@@ -55,7 +56,7 @@ export class WalletController {
   @Description("This endpoint updates a wallet based on the provided ID and data.")
   async updateWallet(
     @PathParams("id") id: string,
-    @BodyParams() @Groups("update") data: WalletModel,
+    @BodyParams() @Groups("update") data: WalletDto,
   ): Promise<WalletModel> {
     return this.walletService.update({
       where: {

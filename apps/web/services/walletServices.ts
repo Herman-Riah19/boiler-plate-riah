@@ -1,83 +1,64 @@
+import { WalletFormData } from "@/validators/wallet-validator";
+
 export class WalletServices {
-  static async getAllWallets(token: string) {
+  static async getAllWallets() {
     const res = await fetch(`${process.env.API_URL}/api/wallets`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: {},
     });
     return res.json();
   }
 
-  static async getWalletById(id: string, token: string) {
+  static async getWalletById(id: string) {
     const res = await fetch(`${process.env.API_URL}/api/wallets/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: {},
     });
     return res.json();
   }
 
-  static async createWallet(walletData: any, token: string) {
+  static async createWallet(walletData: WalletFormData) {
     const res = await fetch(`${process.env.API_URL}/api/wallets`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(walletData),
     });
     return res.json();
   }
 
-  static async updateWallet(id: string, walletData: any, token: string) {
+  static async updateWallet(id: string, walletData: WalletFormData) {
     const res = await fetch(`${process.env.API_URL}/api/wallets/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(walletData),
     });
     return res.json();
   }
 
-  static async deleteWallet(id: string, token: string) {
+  static async deleteWallet(id: string) {
     const res = await fetch(`${process.env.API_URL}/api/wallets/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      method: "DELETE",
+      headers: {},
     });
     return res.json();
   }
 
-  static async getWalletBalance(id: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/wallets/${id}/balance`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getWalletBalance(id: string) {
+    const res = await fetch(
+      `${process.env.API_URL}/api/wallets/${id}/balance`,
+    );
     return res.json();
   }
 
-  static async transferFunds(fromWalletId: string, transferData: any, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/wallets/${fromWalletId}/transfer`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(transferData),
-    });
-    return res.json();
-  }
-
-  static async getWalletTransactions(id: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/wallets/${id}/transactions`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getWalletTransactions(id: string) {
+    const res = await fetch(
+      `${process.env.API_URL}/api/wallets/${id}/transactions`,
+      {
+        headers: {},
+      }
+    );
     return res.json();
   }
 }

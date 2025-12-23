@@ -6,6 +6,7 @@ import {
   ContractTemplateModel,
   ContractTemplatesRepository,
 } from "prisma/generated";
+import { ContractTemplateDto } from "src/validators/ContractTemplateDto";
 
 @Controller("/contract-templates")
 @Docs("api-docs")
@@ -44,7 +45,7 @@ export class ContractTemplateController {
   @Summary("Create a new contract template")
   @Description("This endpoint creates a new contract template with the provided data.")
   async createContractTemplate(
-    @BodyParams() data: ContractTemplateModel,
+    @BodyParams() data: ContractTemplateDto,
   ): Promise<ContractTemplateModel> {
     return await this.contractTemplateService.create({
       data: {
@@ -52,7 +53,6 @@ export class ContractTemplateController {
         description: data.description,
         content: data.content,
         category: data.category,
-        variables: data.variables,
         organizationId: data.organizationId,
       },
     });
@@ -65,7 +65,7 @@ export class ContractTemplateController {
   @Description("This endpoint updates a contract template based on the provided ID and data.")
   async updateContractTemplate(
     @PathParams("id") id: string,
-    @BodyParams() @Groups("update") data: ContractTemplateModel,
+    @BodyParams() @Groups("update") data: ContractTemplateDto,
   ): Promise<ContractTemplateModel> {
     return this.contractTemplateService.update({
       where: {
@@ -75,7 +75,6 @@ export class ContractTemplateController {
         name: data.name,
         description: data.description,
         content: data.content,
-        variables: data.variables,
       },
     });
   }

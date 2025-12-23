@@ -13,6 +13,7 @@ import {
 } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { AttachmentModel, AttachmentsRepository } from "prisma/generated";
+import { AttachmentDto } from "src/validators/AttachmentDto";
 
 @Controller("/attachments")
 @Docs("api-docs")
@@ -48,7 +49,7 @@ export class AttachmentController {
   @Description("Creates a new attachment record with the provided data.")
   @Returns(201, AttachmentModel)
   async createAttachment(
-    @BodyParams() data: AttachmentModel,
+    @BodyParams() data: AttachmentDto,
   ): Promise<AttachmentModel> {
     return await this.attachmentService.create({
       data: {
@@ -70,7 +71,7 @@ export class AttachmentController {
   @Returns(200, AttachmentModel)
   async updateAttachment(
     @PathParams("id") id: string,
-    @BodyParams() @Groups("update") data: AttachmentModel,
+    @BodyParams() @Groups("update") data: AttachmentDto,
   ): Promise<AttachmentModel> {
     return this.attachmentService.update({
       where: {

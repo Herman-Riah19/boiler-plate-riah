@@ -1,88 +1,58 @@
 export class AuditServices {
-  static async getAllAuditLogs(token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAllAuditLogs() {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs`);
     return res.json();
   }
 
-  static async getAuditLogById(id: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditLogById(id: string) {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/${id}`);
     return res.json();
   }
 
-  static async getAuditLogsByEntity(entityType: string, entityId: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/entity/${entityType}/${entityId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditLogsByEntity(entityType: string, entityId: string) {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/entity/${entityType}/${entityId}`);
     return res.json();
   }
 
-  static async getAuditLogsByUser(userId: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/user/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditLogsByUser(userId: string) {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/user/${userId}`);
     return res.json();
   }
 
-  static async getAuditLogsByDateRange(startDate: string, endDate: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/date-range?startDate=${startDate}&endDate=${endDate}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditLogsByDateRange(startDate: string, endDate: string) {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/date-range?startDate=${startDate}&endDate=${endDate}`);
     return res.json();
   }
 
-  static async getAuditLogsByAction(action: string, token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/action/${action}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditLogsByAction(action: string) {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/action/${action}`);
     return res.json();
   }
 
-  static async createAuditLog(auditData: any, token: string) {
+  static async createAuditLog(auditData: any) {
     const res = await fetch(`${process.env.API_URL}/api/audit-logs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(auditData),
     });
     return res.json();
   }
 
-  static async exportAuditLogs(filters: any, token: string) {
+  static async exportAuditLogs(filters: any) {
     const res = await fetch(`${process.env.API_URL}/api/audit-logs/export`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(filters),
     });
     return res.json();
   }
 
-  static async getAuditStatistics(token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/audit-logs/statistics`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  static async getAuditStatistics() {
+    const res = await fetch(`${process.env.API_URL}/api/audit-logs/statistics`);
     return res.json();
   }
 }

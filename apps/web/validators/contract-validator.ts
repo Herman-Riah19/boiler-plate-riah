@@ -1,80 +1,93 @@
 import z from "zod";
 
 /**
- * Enum status
+ * Enum status matching ContractDto.ts
  */
 export const ContractStatusEnum = z.enum([
   "DRAFT",
-  "PUBLISHED",
-  "DEPLOYED",
+  "PENDING_REVIEW",
+  "PENDING_SIGNATURE",
+  "SIGNED",
+  "EXECUTED",
   "ARCHIVED",
+  "REJECTED",
+  "CANCELLED",
 ]);
 
 /**
- * Schéma principal
+ * Contract validation schema matching ContractDto.ts
  */
 export const SmartContractSchema = z.object({
   title: z
     .string()
-    .min(3, "Le titre doit contenir au moins 3 caractères")
-    .max(150, "Le titre ne doit pas dépasser 150 caractères"),
+    .min(1, "Title is required")
+    .max(255, "Title must be less than 255 characters"),
 
   description: z
     .string()
-    .max(500, "La description ne doit pas dépasser 500 caractères")
+    .nullable()
     .optional(),
 
   status: ContractStatusEnum,
 
   content: z
     .string()
-    .min(10, "Le contenu du smart contract est trop court"),
+    .min(1, "Content is required"),
 
   version: z
     .number({
-      message: "La version doit être un nombre",
+      message: "Version must be a number",
     })
-    .int("La version doit être un entier")
-    .nonnegative("La version ne peut pas être négative"),
+    .int("Version must be an integer")
+    .min(0, "Version must be non-negative"),
 
   chainId: z
     .number({
-      message: "Le chainId doit être un nombre",
+      message: "Chain ID must be a number",
     })
-    .int("Le chainId doit être un entier")
-    .positive("Le chainId doit être supérieur à 0"),
+    .int("Chain ID must be an integer")
+    .nullable()
+    .optional(),
 
   smartContractAddress: z
     .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, "Adresse du smart contract invalide")
+    .regex(/^0x[a-fA-F0-9]{40}$/, "Smart contract address must be a valid Ethereum address")
+    .nullable()
     .optional(),
 
   smartContractCode: z
     .string()
-    .min(10, "Le code du smart contract est requis"),
+    .nullable()
+    .optional(),
 
   deploymentTxHash: z
     .string()
-    .regex(/^0x[a-fA-F0-9]{64}$/, "Hash de transaction invalide")
+    .regex(/^0x[a-fA-F0-9]{64}$/, "Deployment transaction hash must be a valid transaction hash")
+    .nullable()
     .optional(),
 
   gasEstimate: z
-    .number()
+    .number({
+      message: "Gas estimate must be a number",
+    })
+    .int("Gas estimate must be an integer")
+    .nullable()
     .optional(),
 
   gasCost: z
     .string()
-    .regex(/^\d+$/, "Le gasCost doit être une chaîne numérique")
+    .nullable()
     .optional(),
 
   requiredSigners: z
     .number({
-      message: "Le nombre de signataires doit être un nombre",
+      message: "Required signers must be a number",
     })
-    .int("Le nombre de signataires doit être un entier")
-    .nonnegative("Le nombre de signataires ne peut pas être négatif"),
+    .int("Required signers must be an integer")
+    .min(0, "Required signers must be non-negative"),
 
   organizationId: z
     .string()
-    .min(11,"organizationId doit être un UUID valide"),
+    .min(1, "Organization ID is required")
+    .uuid("Organization ID must be a valid UUID"),
 });

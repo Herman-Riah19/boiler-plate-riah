@@ -6,6 +6,7 @@ import {
   TemplateVersionModel,
   TemplateVersionsRepository,
 } from "prisma/generated";
+import { TemplateVersionDto } from "src/validators/TemplateVersionDto";
 
 @Controller("/templates")
 @Docs("api-docs")
@@ -44,13 +45,14 @@ export class TemplateVersionController {
   @Summary("Create a new template version")
   @Description("This endpoint creates a new template version with the provided data.")
   async createTemplateVersion(
-    @BodyParams() data: TemplateVersionModel,
+    @BodyParams() data: TemplateVersionDto,
   ): Promise<TemplateVersionModel> {
     return await this.templateVersionService.create({
       data: {
         version: data.version,
         content: data.content,
         templateId: data.templateId,
+        changelog: data.changelog,
       },
     });
   }
@@ -62,7 +64,7 @@ export class TemplateVersionController {
   @Description("This endpoint updates a template version based on the provided ID and data.")
   async updateTemplateVersion(
     @PathParams("id") id: string,
-    @BodyParams() @Groups("update") data: TemplateVersionModel,
+    @BodyParams() @Groups("update") data: TemplateVersionDto,
   ): Promise<TemplateVersionModel> {
     return this.templateVersionService.update({
       where: {
@@ -71,6 +73,7 @@ export class TemplateVersionController {
       data: {
         version: data.version,
         content: data.content,
+        changelog: data.changelog,
       },
     });
   }

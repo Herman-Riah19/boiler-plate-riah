@@ -1,49 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@repo/ui/components/ui/button";
-import { Input } from "@repo/ui/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@repo/ui/components/ui/sheet";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@repo/ui/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@repo/ui/components/ui/card";
-import { Badge } from "@repo/ui/components/ui/badge";
-import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@repo/ui/components/ui/tabs";
+import { useEffect, useState } from "react";
 import { BlockchainServices } from "@/services/blockchainServices";
-import { Plus, Eye, RefreshCw, ExternalLink } from "lucide-react";
-import {
-  TransactionFormData,
-  TransactionSchema,
-} from "@/validators/transaction-validator";
-import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
+import { TransactionSchema } from "@/validators/transaction-validator";
+import * as z from "zod";
+import { PageHeader } from "@/components/page-header";
+import { FormDialog } from "@/components/dialog/form-dialog";
+import { EntityList } from "@/components/entity/entity-list";
+import { EntityCard } from "@/components/card/entity-card";
+import { StatsCards } from "@/components/card/stats-cards";
+import { GenericForm } from "@/components/generic-form";
+import { Eye, RefreshCw, ExternalLink, ArrowUpDown, DollarSign, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Badge } from "@repo/ui/components/ui/badge";
+
+type TransactionFormData = z.infer<typeof TransactionSchema>;
 
 interface TransactionFormProps {
   onSubmit: (data: TransactionFormData) => void;
@@ -56,354 +26,231 @@ function TransactionForm({
   loading,
   gasPrice,
 }: TransactionFormProps) {
-  const form = useForm<TransactionFormData>({
-    resolver: zodResolver(TransactionSchema),
-    defaultValues: {
-      from: "",
-      to: "",
-      value: 1,
-      gasUsed: 21000,
-      gasCost: gasPrice || "",
+  const formFields = [
+    {
+      name: "from",
+      label: "Adresse de locataire",
+      placeholder: "0x...",
+      description: "Adresse Ethereum ou compatible EVM",
     },
-  });
+    {
+      name: "to",
+      label: "Adresse de destination",
+      placeholder: "0x...",
+      description: "Adresse Ethereum ou compatible EVM",
+    },
+    {
+      name: "value",
+      label: "Valeur",
+      placeholder: "1",
+      type: "number" as const,
+    },
+    {
+      name: "gasUsed",
+      label: "Gas Used",
+      placeholder: "21000",
+      type: "number" as const,
+    },
+    {
+      name: "gasCost",
+      label: "Gas Cost",
+      placeholder: "0.000000000000000001",
+      type: "number" as const,
+    },
+  ];
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 m-4">
-        <FormTextfield
-          form={form}
-          name="from"
-          label="Adresse de locataire"
-          placeholder="0x..."
-          description="Adresse Ethereum ou compatible EVM"
-        />
-
-        <FormTextfield
-          form={form}
-          name="to"
-          label="Adresse de destination"
-          placeholder="0x..."
-          description="Adresse Ethereum ou compatible EVM"
-        />
-
-        <FormTextfield
-          form={form}
-          type="number"
-          name="value"
-          label="Valeur"
-          placeholder="1"
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormTextfield
-            form={form}
-            type="number"
-            name="gasUsed"
-            label="Gas Limit"
-            placeholder="21000"
-          />
-
-          <FormTextfield
-            form={form}
-            type="number"
-            name="gasCost"
-            label="Gas Price (Gwei)"
-            placeholder="20"
-            step="0.1"
-          />
-        </div>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Envoi..." : "Envoyer la transaction"}
-        </Button>
-      </form>
-    </Form>
+    <GenericForm
+      schema={TransactionSchema}
+      fields={formFields}
+      onSubmit={onSubmit}
+      submitLabel={loading ? "Envoi..." : "Envoyer la transaction"}
+      loading={loading}
+      defaultValues={{
+        from: "",
+        to: "",
+        value: 1,
+        gasUsed: 21000,
+        gasCost: gasPrice || "",
+      }}
+    />
   );
 }
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [blocks, setBlocks] = useState<any[]>([]);
-  const [networkInfo, setNetworkInfo] = useState<any>(null);
-  const [gasPrice, setGasPrice] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [SheetOpen, setSheetOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("transactions");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      // Load transactions
-      const txResult = await BlockchainServices.getAllTransactions();
-      console.log("🚀 ~ file: page.tsx:324 ~ loadData ~ txResult:", txResult);
-      if (txResult) {
-        setTransactions(txResult || []);
+    const getTransactions = async () => {
+      try {
+        const data = await BlockchainServices.getAllTransactions();
+        setTransactions(data);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
       }
-
-      // // Load latest blocks
-      // const blocksResult = await BlockchainServices.getLatestBlocks();
-      // if (blocksResult.success) {
-      //   setBlocks(blocksResult.data || []);
-      // }
-
-      // // Load network info
-      // const networkResult = await BlockchainServices.getNetworkInfo();
-      // if (networkResult.success) {
-      //   setNetworkInfo(networkResult.data);
-      // }
-
-      // // Load gas price
-      // const gasResult = await BlockchainServices.getGasPrice();
-      // if (gasResult.success) {
-      //   setGasPrice(gasResult.data.price);
-      // }
-    } catch (error) {
-      console.error("Error loading data:", error);
-    }
-  };
+    };
+    getTransactions();
+  }, []);
 
   const handleCreateTransaction = async (data: TransactionFormData) => {
     setLoading(true);
     try {
       const result = await BlockchainServices.createTransaction(data);
-
       if (result.success) {
         setTransactions([result.data, ...transactions]);
-        setSheetOpen(false);
+        setDialogOpen(false);
       }
     } catch (error) {
-      console.error("Error creating transaction:", error);
+      console.error('Error creating transaction:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
+  const handleViewTransaction = (transaction: any) => {
+    // TODO: Implement view functionality
+    console.log('View transaction:', transaction);
+  };
+
+  const handleRefreshTransaction = async (transaction: any) => {
+    try {
+      const result = await BlockchainServices.refreshTransaction(transaction.id);
+      if (result.success) {
+        setTransactions(transactions.map(t =>
+          t.id === transaction.id ? result.data : t
+        ));
+      }
+    } catch (error) {
+      console.error('Error refreshing transaction:', error);
+    }
+  };
+
+  const handleViewOnExplorer = (transaction: any) => {
+    const explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
+    window.open(explorerUrl, '_blank');
+  };
+
+  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       pending: "secondary",
       confirmed: "default",
       failed: "destructive",
+      mined: "default",
     };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
+    return variants[status] || "outline";
   };
 
   const formatAddress = (address: string) => {
+    if (!address) return "N/A";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  // const formatValue = (value: string) => {
-  //   const eth = parseFloat(value) / 1e18;
-  //   return `${eth.toFixed(6)} ETH`;
-  // };
+  const formatValue = (value: number) => {
+    return `${value} ETH`;
+  };
+
+  const renderTransactionCard = (transaction: any, index: number) => (
+    <EntityCard
+      key={transaction.id || index}
+      title={transaction.hash ? formatAddress(transaction.hash) : `Transaction ${index + 1}`}
+      description={`From ${formatAddress(transaction.from)} to ${formatAddress(transaction.to)}`}
+      status={{
+        label: transaction.status || "Unknown",
+        variant: getStatusBadgeVariant(transaction.status),
+      }}
+      metadata={[
+        { label: "Value", value: formatValue(transaction.value || 0) },
+        { label: "Gas Used", value: transaction.gasUsed?.toString() || "N/A" },
+        { label: "Block", value: transaction.blockNumber?.toString() || "Pending" },
+        { label: "Chain ID", value: transaction.chainId?.toString() || "1" },
+      ]}
+      actions={[
+        {
+          icon: <Eye className="h-4 w-4" />,
+          label: "View",
+          onClick: () => handleViewTransaction(transaction),
+        },
+        {
+          icon: <RefreshCw className="h-4 w-4" />,
+          label: "Refresh",
+          onClick: () => handleRefreshTransaction(transaction),
+        },
+        ...(transaction.hash ? [{
+          icon: <ExternalLink className="h-4 w-4" />,
+          label: "View on Explorer",
+          onClick: () => handleViewOnExplorer(transaction),
+        }] : []),
+      ]}
+    />
+  );
+
+  const stats = [
+    {
+      title: "Total Transactions",
+      value: transactions.length,
+      description: "All blockchain transactions",
+      icon: ArrowUpDown,
+      trend: { value: 5, label: "this week", positive: true },
+    },
+    {
+      title: "Confirmed",
+      value: transactions.filter(t => t.status === 'confirmed' || t.status === 'mined').length,
+      description: "Successfully confirmed",
+      icon: CheckCircle,
+      trend: { value: 3, label: "confirmed today", positive: true },
+    },
+    {
+      title: "Pending",
+      value: transactions.filter(t => t.status === 'pending').length,
+      description: "Awaiting confirmation",
+      icon: Clock,
+      trend: { value: 1, label: "still pending", positive: false },
+    },
+    {
+      title: "Failed",
+      value: transactions.filter(t => t.status === 'failed').length,
+      description: "Transaction failures",
+      icon: XCircle,
+      trend: { value: 0, label: "no failures", positive: true },
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Transactions Blockchain
-          </h1>
-          <p className="text-gray-600">Suivez et gérez vos transactions</p>
-        </div>
+      <StatsCards stats={stats} />
 
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={loadData}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Actualiser
-          </Button>
+      <PageHeader
+        title="Blockchain Transactions"
+        description="Monitor and manage blockchain transactions"
+        action={{
+          label: "Create Transaction",
+          onClick: () => setDialogOpen(true),
+        }}
+      />
 
-          <Sheet open={SheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Nouvelle transaction
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="max-w-2xl">
-              <SheetHeader>
-                <SheetTitle>Créer une transaction</SheetTitle>
-                <SheetDescription>
-                  Envoyez des fonds ou interagissez avec des contrats
-                </SheetDescription>
-              </SheetHeader>
-              <TransactionForm
-                onSubmit={handleCreateTransaction}
-                loading={loading}
-                gasPrice={gasPrice}
-              />
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
+      <EntityList
+        title="Transactions"
+        description={`${transactions.length} transaction(s) found`}
+        items={transactions}
+        renderItem={renderTransactionCard}
+        emptyMessage="No transactions found"
+        emptyAction={{
+          label: "Create your first transaction",
+          onClick: () => setDialogOpen(true),
+        }}
+      />
 
-      {/* Network Info */}
-      {networkInfo && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Réseau</div>
-              <div className="text-lg font-semibold">{networkInfo.name}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Block actuel</div>
-              <div className="text-lg font-semibold">
-                {networkInfo.blockNumber}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Gas Price</div>
-              <div className="text-lg font-semibold">{gasPrice} Gwei</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Chain ID</div>
-              <div className="text-lg font-semibold">{networkInfo.chainId}</div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="blocks">Blocs</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="transactions" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Historique des transactions</CardTitle>
-              <CardDescription>
-                {transactions.length} transaction(s) trouvée(s)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {transactions.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 mb-4">
-                    Aucune transaction trouvée
-                  </p>
-                  <Button onClick={() => setSheetOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Créer votre première transaction
-                  </Button>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-4">
-                    {transactions.map((tx) => (
-                      <div
-                        key={tx.txHash}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-medium font-mono text-sm">
-                              {formatAddress(tx.txHash)}
-                            </h4>
-                            {getStatusBadge(tx.status)}
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span>De: {formatAddress(tx.from)}</span>
-                            <span>À: {formatAddress(tx.to)}</span>
-                            <span className="font-medium">{tx.value} ETH</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                            <span>Block: {tx.blockNumber}</span>
-                            <span>
-                              Gas: {tx.gasUsed}/{tx.gasLimit}
-                            </span>
-                            <span>
-                              {new Date(tx.createdAt).toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="blocks" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Derniers blocs</CardTitle>
-              <CardDescription>
-                {blocks.length} bloc(s) trouvé(s)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {blocks.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">Aucun bloc trouvé</p>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-4">
-                    {blocks.map((block) => (
-                      <div
-                        key={block.number}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-medium">
-                              Bloc #{block.number}
-                            </h4>
-                            <Badge variant="outline">
-                              {block.transactions.length} txs
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span>Hash: {formatAddress(block.hash)}</span>
-                            <span>Miner: {formatAddress(block.miner)}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                            <span>Gas Limit: {block.gasLimit}</span>
-                            <span>Gas Used: {block.gasUsed}</span>
-                            <span>
-                              {new Date(block.timestamp).toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <FormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title="Create New Transaction"
+        description="Send a new blockchain transaction"
+        maxWidth="max-w-2xl"
+      >
+        <TransactionForm onSubmit={handleCreateTransaction} loading={loading} />
+      </FormDialog>
     </div>
   );
 }

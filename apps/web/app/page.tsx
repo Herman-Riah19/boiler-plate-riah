@@ -1,8 +1,8 @@
 "use client";
-import { About } from '@/components/pages/landingPage/about';
-import { FAQ } from '@/components/pages/landingPage/faq';
-import { Feature } from '@/components/pages/landingPage/feature';
-import { Parteners } from '@/components/pages/landingPage/parteners';
+import { About } from '@/components/common/landingPage/about';
+import { FAQ } from '@/components/common/landingPage/faq';
+import { Feature } from '@/components/common/landingPage/feature';
+import { Parteners } from '@/components/common/landingPage/parteners';
 import * as React from 'react';
 
 export default function HomePage () {
