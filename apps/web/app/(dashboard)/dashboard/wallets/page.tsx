@@ -218,6 +218,7 @@ export default function WalletsPage() {
         onOpenChange={setDialogOpen}
         title="Créer un nouveau wallet"
         description="Ajoutez un nouveau portefeuille à votre compte"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <WalletForm onSubmit={handleCreateWallet} loading={loading} />
       </FormDialog>

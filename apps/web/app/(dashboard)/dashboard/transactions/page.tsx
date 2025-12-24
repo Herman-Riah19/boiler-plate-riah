@@ -247,7 +247,7 @@ export default function TransactionsPage() {
         onOpenChange={setDialogOpen}
         title="Create New Transaction"
         description="Send a new blockchain transaction"
-        maxWidth="max-w-2xl"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <TransactionForm onSubmit={handleCreateTransaction} loading={loading} />
       </FormDialog>

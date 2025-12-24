@@ -278,6 +278,7 @@ export default function ContractsPage() {
         onOpenChange={setDialogOpen}
         title="Créer un nouveau contrat"
         description="Définissez les caractéristiques de votre contrat intelligent"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <ContractForm onSubmit={handleCreateContract} loading={loading} />
       </FormDialog>

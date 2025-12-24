@@ -1,10 +1,21 @@
 export class UserServices {
+
+  static async getAllUsers() {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
+    return res.json();
+  }
+  
+  static async getUserById(id: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`)
+    return res.json();
+  }
+
   static async register(userData: {
     email: string;
     password: string;
     name?: string;
   }) {
-    const res = await fetch(`${process.env.API_URL}/api/users/register`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +30,7 @@ export class UserServices {
     email: string;
     password: string;
   }) {
-    const res = await fetch(`${process.env.API_URL}/api/users/login`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +42,7 @@ export class UserServices {
   }
 
   static async getProfile(token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/users/profile`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -41,7 +52,7 @@ export class UserServices {
   }
 
   static async updateProfile(token: string, userData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/users/profile`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +65,7 @@ export class UserServices {
   }
 
   static async logout(token: string) {
-    const res = await fetch(`${process.env.API_URL}/api/users/logout`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

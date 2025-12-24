@@ -58,17 +58,17 @@ export function EntityCard({
           {subtitle && (
             <div className="text-sm font-medium text-gray-700 leading-tight mb-1">{subtitle}</div>
           )}
-          {description && (
-            <CardDescription className="text-gray-600 mb-1">{description}</CardDescription>
-          )}
           {metadata.length > 0 && (
-            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mt-1">
+            <div className="flex flex-wrap items-center gap-2 mt-1">
               {metadata.map((item, index) => (
-                <span key={index}>
-                  {item.label}: {item.value}
-                </span>
+                <Badge key={index} variant="secondary" className="text-xs font-normal px-2 py-1">
+                  <span className="font-medium">{item.label}:</span> {item.value}
+                </Badge>
               ))}
             </div>
+          )}
+          {description && (
+            <CardDescription className="text-gray-600 mb-1">{description}</CardDescription>
           )}
         </div>
         {actions.length > 0 && (

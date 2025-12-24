@@ -2,15 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { FileServices } from "@/services/fileServices";
-import * as z from "zod";
-
-const FileUploadSchema = z.object({
-  filename: z.string().min(1, "Filename is required"),
-  category: z.enum(["document", "image", "video", "audio", "archive", "other"]),
-  description: z.string().optional(),
-  tags: z.string().optional(),
-  file: z.any(),
-});
 import { PageHeader } from "@/components/page-header";
 import { FormDialog } from "@/components/dialog/form-dialog";
 import { EntityList } from "@/components/entity/entity-list";
@@ -18,9 +9,8 @@ import { EntityCard } from "@/components/card/entity-card";
 import { StatsCards } from "@/components/card/stats-cards";
 import { GenericForm } from "@/components/generic-form";
 import { Eye, Download, Trash2, Upload, FileText, Image, HardDrive, Database, File } from "lucide-react";
-import { Badge } from "@repo/ui/components/ui/badge";
+import { AttachmentSchema } from "@/validators/attachment-validator";
 
-type FileUploadFormData = z.infer<typeof FileUploadSchema>;
 
 interface FileUploadFormProps {
   onSubmit: (file: File) => void;
@@ -137,7 +127,7 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
       )}
 
       <GenericForm
-        schema={FileUploadSchema}
+        schema={AttachmentSchema}
         fields={formFields}
         onSubmit={handleFormSubmit}
         submitLabel={loading ? "Upload..." : "Uploader le fichier"}
@@ -312,7 +302,7 @@ export default function FilesPage() {
         onOpenChange={setDialogOpen}
         title="Upload New File"
         description="Select and upload a file for your contracts"
-        maxWidth="max-w-2xl"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <FileUploadForm
           onSubmit={handleUploadFile}

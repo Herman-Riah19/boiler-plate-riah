@@ -1,16 +1,16 @@
 export class TemplateServices {
   static async getAllTemplates() {
-    const res = await fetch(`${process.env.API_URL}/api/templates`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates`);
     return res.json();
   }
 
   static async getTemplateById(id: string) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${id}`);
     return res.json();
   }
 
   static async createTemplate(templateData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/templates`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export class TemplateServices {
   }
 
   static async updateTemplate(id: string, templateData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -32,19 +32,19 @@ export class TemplateServices {
   }
 
   static async deleteTemplate(id: string) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${id}`, {
       method: 'DELETE',
     });
     return res.json();
   }
 
   static async getTemplateVersions(templateId: string) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${templateId}/versions`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${templateId}/versions`);
     return res.json();
   }
 
   static async createTemplateVersion(templateId: string, versionData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${templateId}/versions`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${templateId}/versions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export class TemplateServices {
   }
 
   static async deployTemplate(templateId: string, versionId: string, deployData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/${templateId}/versions/${versionId}/deploy`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/${templateId}/versions/${versionId}/deploy`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export class TemplateServices {
   }
 
   static async validateTemplate(templateData: any) {
-    const res = await fetch(`${process.env.API_URL}/api/templates/validate`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates/validate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

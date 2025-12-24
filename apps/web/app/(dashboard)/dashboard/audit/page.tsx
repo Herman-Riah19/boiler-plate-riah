@@ -2,99 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { AuditServices } from "@/services/auditServices";
-import { AuditLogSchema } from "@/validators/audit-log-validator";
-import * as z from "zod";
 import { PageHeader } from "@/components/page-header";
 import { FormDialog } from "@/components/dialog/form-dialog";
 import { EntityList } from "@/components/entity/entity-list";
 import { EntityCard } from "@/components/card/entity-card";
 import { StatsCards } from "@/components/card/stats-cards";
-import { GenericForm } from "@/components/generic-form";
-import { Eye, Activity, User, Calendar, Shield, AlertTriangle, CheckCircle, XCircle, Trash2 } from "lucide-react";
-import { Badge } from "@repo/ui/components/ui/badge";
-
-type AuditLogFormData = z.infer<typeof AuditLogSchema>;
-
-interface AuditLogFormProps {
-  onSubmit: (data: AuditLogFormData) => void;
-  loading?: boolean;
-}
-
-function AuditLogForm({ onSubmit, loading }: AuditLogFormProps) {
-  const formFields = [
-    {
-      name: "action",
-      label: "Action",
-      type: "select" as const,
-      options: [
-        { value: "create", label: "Création" },
-        { value: "update", label: "Mise à jour" },
-        { value: "delete", label: "Suppression" },
-        { value: "deploy", label: "Déploiement" },
-        { value: "transfer", label: "Transfert" },
-        { value: "login", label: "Connexion" },
-        { value: "logout", label: "Déconnexion" },
-      ],
-      placeholder: "Sélectionnez une action",
-      colSpan: 1,
-    },
-    {
-      name: "entityType",
-      label: "Type d'entité",
-      type: "select" as const,
-      options: [
-        { value: "contract", label: "Contrat" },
-        { value: "wallet", label: "Wallet" },
-        { value: "organization", label: "Organisation" },
-        { value: "user", label: "Utilisateur" },
-        { value: "template", label: "Template" },
-        { value: "transaction", label: "Transaction" },
-      ],
-      placeholder: "Sélectionnez un type",
-      colSpan: 1,
-    },
-    {
-      name: "entityId",
-      label: "ID de l'entité",
-      placeholder: "entity_123",
-      type: "text" as const,
-      colSpan: 2,
-    },
-    {
-      name: "description",
-      label: "Description",
-      placeholder: "Description de l'action...",
-      type: "textarea" as const,
-      colSpan: 2,
-    },
-    {
-      name: "metadata",
-      label: "Métadonnées (JSON)",
-      placeholder: '{"key": "value"}',
-      type: "textarea" as const,
-      formDescription: "Métadonnées additionnelles au format JSON",
-      className: "font-mono text-sm",
-      colSpan: 2,
-    },
-  ];
-
-  return (
-    <GenericForm
-      schema={AuditLogSchema}
-      fields={formFields}
-      onSubmit={onSubmit}
-      submitLabel={loading ? "Creating..." : "Create Audit Log"}
-      loading={loading}
-      defaultValues={{
-        action: "",
-        entityType: "",
-        entityId: "",
-        description: "",
-        metadata: "",
-      }}
-    />
-  );
-}
+import { Eye, Activity, User, Calendar, AlertTriangle, Trash2 } from "lucide-react";
+import { AuditLogForm } from "./auditLogForm";
+import { AuditLogFormData } from "@/validators/audit-log-validator";
+import { ContractServices } from "@/services/contractServices";
+import { OrganizationServices } from "@/services/organizationServices";
+import { UserServices } from "@/services/userServices";
 
 export default function AuditPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -138,42 +56,36 @@ export default function AuditPage() {
     console.log('Delete audit log:', auditLog);
   };
 
-  const getActionBadgeVariant = (action: string): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      create: "default",
-      update: "secondary",
-      delete: "destructive",
-      deploy: "default",
-      transfer: "secondary",
-      login: "outline",
-      logout: "outline",
-    };
-    return variants[action] || "outline";
-  };
-
   const renderAuditLogCard = (auditLog: any, index: number) => (
     <EntityCard
       key={auditLog.id || index}
       title={auditLog.action}
-      description={auditLog.description}
+      description={
+        auditLog.details
+          ? typeof auditLog.details === "string"
+            ? auditLog.details
+            : JSON.stringify(auditLog.details)
+          : "Aucune information complémentaire"
+      }
       status={{
-        label: auditLog.entityType,
+        label: auditLog.action,
         variant: "outline" as const,
       }}
       metadata={[
-        { label: "Entity ID", value: auditLog.entityId },
-        { label: "User", value: auditLog.userId || "Unknown" },
+        { label: "Contrat", value: auditLog.contract.title },
+        { label: "Utilisateur", value: auditLog.user.name },
+        { label: "Organisation", value: auditLog.organization.name },
         { label: "Date", value: new Date(auditLog.createdAt).toLocaleString() },
       ]}
       actions={[
         {
           icon: <Eye className="h-4 w-4" />,
-          label: "View",
+          label: "Voir",
           onClick: () => handleViewAuditLog(auditLog),
         },
         {
           icon: <Trash2 className="h-4 w-4" />,
-          label: "Delete",
+          label: "Supprimer",
           onClick: () => handleDeleteAuditLog(auditLog),
           variant: "destructive" as const,
         },
@@ -247,7 +159,7 @@ export default function AuditPage() {
         onOpenChange={setDialogOpen}
         title="Create New Audit Log"
         description="Record a new system activity"
-        maxWidth="max-w-4xl"
+        maxWidth="max-w-4xl overflow-auto"
       >
         <AuditLogForm onSubmit={handleCreateAuditLog} loading={loading} />
       </FormDialog>

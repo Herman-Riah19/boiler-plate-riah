@@ -13,8 +13,7 @@ export const AuditActionEnum = z.enum([
   "SIGNATURE_REQUESTED",
   "SIGNATURE_COMPLETED",
   "DEPLOYMENT_STARTED",
-  "DEPLOYMENT_SUCCESS",
-  "DEPLOYMENT_FAILED",
+  "TRANSFERT",
 ]);
 
 /**
@@ -23,18 +22,15 @@ export const AuditActionEnum = z.enum([
 export const AuditLogSchema = z.object({
   contractId: z
     .string()
-    .min(1, "Contract ID is required")
-    .uuid("Contract ID must be a valid UUID"),
+    .min(1, "Contract ID is required"),
 
   userId: z
     .string()
-    .min(1, "User ID is required")
-    .uuid("User ID must be a valid UUID"),
+    .min(1, "User ID is required"),
 
   organizationId: z
     .string()
-    .min(1, "Organization ID is required")
-    .uuid("Organization ID must be a valid UUID"),
+    .min(1, "Organization ID is required"),
 
   action: AuditActionEnum,
 

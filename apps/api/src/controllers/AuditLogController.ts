@@ -5,7 +5,7 @@ import { Docs } from "@tsed/swagger";
 import { AuditLogModel, AuditLogsRepository } from "prisma/generated";
 import { AuditLogDto } from "src/validators/AuditLogDto";
 
-@Controller("/AuditLogs")
+@Controller("/audit-logs")
 @Docs("api-docs")
 export class AuditLogController {
     constructor(@Inject() private AuditLogService: AuditLogsRepository) {}
@@ -16,7 +16,13 @@ export class AuditLogController {
     @Description("Returns a list of audit logs stored in the system.")
     @(Returns(200, Array).Of(AuditLogModel))
     getAllAuditLogs() {
-        return this.AuditLogService.findMany();
+        return this.AuditLogService.findMany({
+            include: {
+                contract: true,
+                user: true,
+                organization: true,
+            },
+        });
     }
 
     @Get("/:id")

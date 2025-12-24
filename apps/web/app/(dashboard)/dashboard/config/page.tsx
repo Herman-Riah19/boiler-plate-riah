@@ -350,7 +350,7 @@ export default function ConfigPage() {
         onOpenChange={setDialogOpen}
         title="Créer une configuration"
         description="Ajoutez un nouveau paramètre de configuration"
-        maxWidth="max-w-2xl"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <ConfigForm onSubmit={handleCreateConfig} loading={loading} />
       </FormDialog>

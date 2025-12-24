@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as z from 'zod';
 import { OrganizationServices } from '@/services/organizationServices';
 import { OrganizationSchema, MemberSchema } from '@/validators/organization-validator';
@@ -129,6 +129,14 @@ export default function OrganizationsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
+
+  useEffect(() => {
+    const getOrganizations = async () => {
+      const data = await OrganizationServices.getAllOrganizations();
+      setOrganizations(data);
+    };
+    getOrganizations();
+  }, []);
 
   const handleCreateOrganization = async (data: OrganizationFormData) => {
     setLoading(true);
@@ -284,6 +292,7 @@ export default function OrganizationsPage() {
         onOpenChange={setDialogOpen}
         title="Créer une nouvelle organisation"
         description="Définissez les informations de votre organisation"
+        maxWidth="max-w-2xl overflow-y-auto"
       >
         <OrganizationForm onSubmit={handleCreateOrganization} loading={loading} />
       </FormDialog>
@@ -293,7 +302,7 @@ export default function OrganizationsPage() {
         onOpenChange={setMemberDialogOpen}
         title="Ajouter un membre"
         description={`Ajouter un nouveau membre à ${selectedOrg?.name}`}
-        maxWidth="max-w-md"
+        maxWidth="max-w-md overflow-y-auto"
       >
         <MemberForm onSubmit={handleAddMember} loading={memberLoading} />
       </FormDialog>
