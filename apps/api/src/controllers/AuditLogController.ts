@@ -1,9 +1,10 @@
-import { Controller, Inject } from "@tsed/di";
+import { Controller, Inject, Intercept } from "@tsed/di";
 import { UseAuth } from "@tsed/platform-middlewares";
 import { BodyParams, PathParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Returns, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { AuditLogModel, AuditLogsRepository } from "prisma/generated";
+import { UserInterceptor } from "src/interceptors/userInterceptor";
 import { CustomAuthMiddleware } from "src/middlewares/userMiddleware";
 import { AuditLogDto } from "src/validators/AuditLogDto";
 
@@ -18,6 +19,7 @@ export class AuditLogController {
     @Description("Returns a list of audit logs stored in the system.")
     @(Returns(200, Array).Of(AuditLogModel))
     @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
+    @Intercept(UserInterceptor)
     getAllAuditLogs() {
         return this.AuditLogService.findMany({
             include: {

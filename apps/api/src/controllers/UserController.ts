@@ -65,14 +65,4 @@ export class UserController {
   getUserById( @UseUserParams("id") user: UserModel) {
     return user;
   }
-
-  @Get("/me")
-  @Title("Get Current User")
-  @Summary("Get current authenticated user")
-  @Description("This endpoint returns the current authenticated user.")
-  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
-  @Returns(200, UserModel)
-  async getCurrentUser(@Context("user") user: any): Promise<UserModel | null> {
-    return this.service.findUnique({ where: { id: user.id } });
-  }
 }

@@ -57,21 +57,6 @@ export class UserServices {
     return data;
   }
 
-  static async getCurrentUser() {
-    const { headers } = useAuthHeaders();
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to get current user');
-    }
-
-    return response.json();
-  }
-
   // Helper function to check if user is authenticated
   static isAuthenticated(): boolean {
     return useAuthStore.getState().isAuthenticated;
