@@ -1,3 +1,6 @@
+import { useAuthHeaders, useAuthStore, User } from "@/lib/auth-store";
+import { LoginResponse } from "@/types/authType";
+
 export class UserServices {
 
   static async getAllUsers() {
@@ -29,7 +32,7 @@ export class UserServices {
   static async login(credentials: {
     email: string;
     password: string;
-  }) {
+  }): Promise<LoginResponse> {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
       method: 'POST',
       headers: {
@@ -37,8 +40,41 @@ export class UserServices {
       },
       body: JSON.stringify(credentials),
     });
+    const data = await res.json();
 
-    return res.json();
+    useAuthStore.getState().login(data.user, data.token);
+
+    return data;
+  }
+
+  static async getCurrentUser() {
+    const { headers } = useAuthHeaders();
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get current user');
+    }
+
+    return response.json();
+  }
+
+  // Helper function to check if user is authenticated
+  static isAuthenticated(): boolean {
+    return useAuthStore.getState().isAuthenticated;
+  }
+
+  // Helper function to get current token
+  static getToken(): string | null {
+    return useAuthStore.getState().token;
+  }
+
+  // Helper function to get current user
+  static getCurrentUserFromStore(): User | null {
+    return useAuthStore.getState().user;
   }
 
   static async getProfile(token: string) {

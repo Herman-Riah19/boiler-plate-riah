@@ -51,6 +51,8 @@ model User {
 
   name          String?
 
+  role          Role     @default(VIEWER)
+
   /// @TsED.Description("Hashed user password")
   /// @TsED.Groups("!read")
   password      String?
@@ -94,6 +96,7 @@ model Member {
 
 enum Role {
   ADMIN
+  CLIENT
   EDITOR
   SIGNER
   VIEWER

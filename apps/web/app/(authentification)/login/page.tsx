@@ -6,6 +6,7 @@ import { Button } from '@repo/ui/components/ui/button';
 import { Input } from '@repo/ui/components/ui/input';
 import { Label } from '@repo/ui/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
+import { useAuthStore } from '@/lib/auth-store';
 import { UserServices } from '@/services/userServices';
 
 export default function LoginPage() {
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isAuthenticated = useAuthStore((state: { isAuthenticated: any; }) => state.isAuthenticated);
 
   useEffect(() => {
     const msg = searchParams.get('message');
@@ -25,6 +27,12 @@ export default function LoginPage() {
       setMessage(msg);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -39,20 +47,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await UserServices.login({
+      await UserServices.login({
         email: formData.email,
         password: formData.password,
       });
 
-      if (result.success) {
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        router.push('/');
-      } else {
-        setError(result.message || 'Erreur lors de la connexion');
-      }
+      // Redirect to dashboard after successful login
+      router.push('/dashboard');
     } catch (err) {
-      setError('Une erreur est survenue');
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }

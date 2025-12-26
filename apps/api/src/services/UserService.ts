@@ -3,6 +3,7 @@ import { UsersRepository } from "prisma/generated";
 import { UserModel } from "prisma/generated";
 import { ErrorMsg } from "@tsed/schema";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { Injectable, Intercept } from "@tsed/di";
 import { UserLoginDto } from "src/validators/UserDto";
 import { UserInterceptor } from "src/interceptors/userInterceptor";
@@ -50,14 +51,31 @@ export class UserService extends UsersRepository {
 
     const isPasswordValid = await this.isPasswordValid(auth.password, existUser.password);
 
-    if(!isPasswordValid) throw ErrorMsg({ error: "Invalid Passord"})
+    if(!isPasswordValid) throw ErrorMsg({ error: "Invalid Password"});
 
     const user = await this.findUnique({
       where: {
         email: auth.email
       }
     });
-    return this.deserialize<UserModel>(user!);
+
+    const deserializedUser = this.deserialize<UserModel>(user!);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: deserializedUser.id,
+        email: deserializedUser.email,
+        role: deserializedUser.role
+      },
+      process.env.JWT_SECRET || "default-secret-key",
+      { expiresIn: "24h" }
+    );
+
+    return {
+      user: deserializedUser,
+      token
+    };
   }
 
   async logout(user: UserModel): Promise<void> {

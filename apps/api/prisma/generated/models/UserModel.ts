@@ -1,5 +1,6 @@
 import { User } from "../client/index.js";
-import { Allow, CollectionOf, Description, Email, Format, Groups, Property, Required } from "@tsed/schema";
+import { Allow, CollectionOf, Description, Email, Enum, Format, Groups, Property, Required } from "@tsed/schema";
+import { Role } from "../enums/index.js";
 import { MemberModel } from "./MemberModel.js";
 import { SignatureModel } from "./SignatureModel.js";
 import { AuditLogModel } from "./AuditLogModel.js";
@@ -20,6 +21,10 @@ export class UserModel implements User {
   @Property(String)
   @Allow(null)
   name: string | null;
+
+  @Required()
+  @Enum(Role)
+  role: Role;
 
   @Property(String)
   @Allow(null)

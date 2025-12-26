@@ -1,5 +1,5 @@
 import { Controller, Inject, Intercept } from "@tsed/di";
-import { BodyParams } from "@tsed/platform-params";
+import { BodyParams, Context } from "@tsed/platform-params";
 import { UserModel } from "prisma/generated";
 import { Get, Groups, Post, Returns, Summary, Title, Description } from "@tsed/schema";
 import { UserCreateDto, UserLoginDto } from "src/validators/UserDto";
@@ -7,6 +7,7 @@ import { UserService } from "src/services/UserService";
 import { UserInterceptor } from "src/interceptors/userInterceptor";
 import { Docs } from "@tsed/swagger";
 import { UseUserParams } from "src/decorators/useUserParams";
+import { UseAuth } from "src/decorators/useAuth";
 
 @Controller("/users")
 @Docs("api-docs")
@@ -28,10 +29,10 @@ export class UserController {
   @Title("User Login")
   @Summary("Login user")
   @Description("This endpoint allows users to log in.")
-  @Returns(201, UserModel)
+  @Returns(200, Object)
   async signinUser(
     @BodyParams() @Groups("creation") user: UserLoginDto
-  ): Promise<UserModel | null> {
+  ): Promise<{ user: UserModel; token: string }> {
     return this.service.login(user);
   }
 
@@ -40,9 +41,16 @@ export class UserController {
   @Summary("Filter user by name or content")
   @Description("This endpoint retrieves a list of users filtered by name or content.")
   @(Returns(200, Array).Of(UserModel).Description("Return a list of User"))
+  @UseAuth({ role: "ADMIN" })
   @Intercept(UserInterceptor)
   getAll() {
-    return this.service.findMany();
+    return this.service.findMany({
+      include: {
+        members: true,
+        signatures: true,
+        auditLogs: true,
+      },
+    });
   }
 
 
@@ -54,6 +62,16 @@ export class UserController {
   @Intercept(UserInterceptor)
   getUserById( @UseUserParams("id") user: UserModel) {
     return user;
+  }
+
+  @Get("/me")
+  @Title("Get Current User")
+  @Summary("Get current authenticated user")
+  @Description("This endpoint returns the current authenticated user.")
+  @UseAuth()
+  @Returns(200, UserModel)
+  async getCurrentUser(@Context("user") user: any): Promise<UserModel | null> {
+    return this.service.findUnique({ where: { id: user.id } });
   }
 
   @Post("/logout")
