@@ -42,7 +42,7 @@ export class UserController {
   @Summary("Filter user by name or content")
   @Description("This endpoint retrieves a list of users filtered by name or content.")
   @(Returns(200, Array).Of(UserModel).Description("Return a list of User"))
-  @UseAuth( CustomAuthMiddleware, { role: "ADMIN" } )
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   @Intercept(UserInterceptor)
   getAll() {
     return this.service.findMany({
