@@ -7,7 +7,8 @@ import { UserService } from "src/services/UserService";
 import { UserInterceptor } from "src/interceptors/userInterceptor";
 import { Docs } from "@tsed/swagger";
 import { UseUserParams } from "src/decorators/useUserParams";
-import { UseAuth } from "src/decorators/useAuth";
+import { UseAuth } from "@tsed/platform-middlewares";
+import { CustomAuthMiddleware } from "src/middlewares/userMiddleware";
 
 @Controller("/users")
 @Docs("api-docs")
@@ -41,7 +42,7 @@ export class UserController {
   @Summary("Filter user by name or content")
   @Description("This endpoint retrieves a list of users filtered by name or content.")
   @(Returns(200, Array).Of(UserModel).Description("Return a list of User"))
-  @UseAuth({ role: "ADMIN" })
+  @UseAuth( CustomAuthMiddleware, { role: "ADMIN" } )
   @Intercept(UserInterceptor)
   getAll() {
     return this.service.findMany({
@@ -59,6 +60,7 @@ export class UserController {
   @Summary("Get a single user by its unique ID")
   @Description("This endpoint retrieves a single user by their unique identifier.")
   @Returns(200, UserModel)
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   @Intercept(UserInterceptor)
   getUserById( @UseUserParams("id") user: UserModel) {
     return user;
@@ -68,7 +70,7 @@ export class UserController {
   @Title("Get Current User")
   @Summary("Get current authenticated user")
   @Description("This endpoint returns the current authenticated user.")
-  @UseAuth()
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   @Returns(200, UserModel)
   async getCurrentUser(@Context("user") user: any): Promise<UserModel | null> {
     return this.service.findUnique({ where: { id: user.id } });

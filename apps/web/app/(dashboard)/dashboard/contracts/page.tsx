@@ -11,6 +11,7 @@ import { EntityList } from "@/components/entity/entity-list";
 import { EntityCard } from "@/components/card/entity-card";
 import { GenericForm } from "@/components/generic-form";
 import { Eye, Edit, Trash2, Play } from "lucide-react";
+import { useAuthStore } from "@/lib/auth-store";
 
 type ContractFormData = z.infer<typeof SmartContractSchema>;
 
@@ -21,10 +22,11 @@ interface ContractFormProps {
 
 function ContractForm({ onSubmit, loading }: ContractFormProps) {
   const [organisations, setOrganisations] = useState([]);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getOrganisations = async () => {
-      const data = await OrganizationServices.getAllOrganizations();
+      const data = await OrganizationServices.getAllOrganizations(token as string);
       setOrganisations(data);
     };
     getOrganisations();
@@ -141,10 +143,11 @@ export default function ContractsPage() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getContracts = async () => {
-      const data = await ContractServices.getAllContracts();
+      const data = await ContractServices.getAllContracts(token as string);
       setContracts(data);
     };
     getContracts();
@@ -154,7 +157,7 @@ export default function ContractsPage() {
     setLoading(true);
     try {
       console.log("form data: ", data.organizationId);
-      const result = await ContractServices.createContract(data);
+      const result = await ContractServices.createContract(data, token as string);
 
       if (result) {
         setContracts([...contracts, result.data]);
@@ -169,7 +172,7 @@ export default function ContractsPage() {
 
   const handleDeployContract = async (id: string) => {
     try {
-      const result = await ContractServices.getAllContracts();
+      const result = await ContractServices.deployContract(id, token as string);
 
       if (result.success) {
         setContracts(

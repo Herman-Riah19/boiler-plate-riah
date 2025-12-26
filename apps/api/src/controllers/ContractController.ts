@@ -1,8 +1,10 @@
 import { Controller, Inject } from "@tsed/di";
+import { UseAuth } from "@tsed/platform-middlewares";
 import { PathParams, BodyParams } from "@tsed/platform-params";
 import { Delete, Get, Groups, Post, Put, Title, Summary, Description } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { ContractModel, ContractsRepository } from "prisma/generated";
+import { CustomAuthMiddleware } from "src/middlewares/userMiddleware";
 import { ContractDto } from "src/validators/ContractDto";
 
 @Controller("/contracts")
@@ -14,14 +16,20 @@ export class ContractController {
   @Title("Get All Contracts")
   @Summary("Retrieve all contracts")
   @Description("Returns a list of all contracts in the system.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   get() {
-    return this.contractService.findMany();
+    return this.contractService.findMany({
+      include: {
+        organization: true,
+      }
+    });
   }
 
   @Get("/:id")
   @Title("Get Contract by ID")
   @Summary("Retrieve a contract by its ID")
   @Description("Returns a single contract based on the provided ID.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async getPostById(
     @PathParams("id") id: string
   ): Promise<ContractModel | null> {
@@ -36,6 +44,7 @@ export class ContractController {
   @Title("Create New Contract")
   @Summary("Create a new contract")
   @Description("Creates a new contract with the provided details.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async createNewPost(
     @BodyParams()
     contract: ContractDto
@@ -65,6 +74,7 @@ export class ContractController {
   @Title("Update Contract")
   @Summary("Update an existing contract")
   @Description("Updates the contract with the specified ID using the provided data.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async updatePost(
     @PathParams("id") id: string,
     @BodyParams() @Groups("update") contract: ContractModel
@@ -85,6 +95,7 @@ export class ContractController {
   @Title("Delete Contract")
   @Summary("Delete a contract by ID")
   @Description("Removes the contract with the specified ID from the system.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async deletePost(@PathParams("id") id: string): Promise<ContractModel> {
     return this.contractService.delete({
       where: {

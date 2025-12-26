@@ -11,6 +11,7 @@ import { EntityCard } from '@/components/card/entity-card';
 import { GenericForm } from '@/components/generic-form';
 import { Eye, Edit, Trash2, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/ui/avatar';
+import { useAuthStore } from '@/lib/auth-store';
 
 type OrganizationFormData = z.infer<typeof OrganizationSchema>;
 type MemberFormData = z.infer<typeof MemberSchema>;
@@ -129,10 +130,11 @@ export default function OrganizationsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
-
+  const token = useAuthStore.getState().token;
+  
   useEffect(() => {
     const getOrganizations = async () => {
-      const data = await OrganizationServices.getAllOrganizations();
+      const data = await OrganizationServices.getAllOrganizations(token as string);
       setOrganizations(data);
     };
     getOrganizations();
@@ -141,7 +143,7 @@ export default function OrganizationsPage() {
   const handleCreateOrganization = async (data: OrganizationFormData) => {
     setLoading(true);
     try {
-      const result = await OrganizationServices.createOrganization(data);
+      const result = await OrganizationServices.createOrganization(data, token as string);
 
       if (result.success) {
         setOrganizations([...organizations, result.data]);
@@ -157,7 +159,7 @@ export default function OrganizationsPage() {
   const handleAddMember = async (data: MemberFormData) => {
     setMemberLoading(true);
     try {
-      const result = await OrganizationServices.addMember(selectedOrg.id, data);
+      const result = await OrganizationServices.addMember(selectedOrg.id, data, token as string);
 
       if (result.success) {
         setMemberDialogOpen(false);

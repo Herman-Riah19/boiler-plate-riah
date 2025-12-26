@@ -13,16 +13,18 @@ import { AuditLogFormData } from "@/validators/audit-log-validator";
 import { ContractServices } from "@/services/contractServices";
 import { OrganizationServices } from "@/services/organizationServices";
 import { UserServices } from "@/services/userServices";
+import { useAuthStore } from "@/lib/auth-store";
 
 export default function AuditPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getAuditLogs = async () => {
       try {
-        const data = await AuditServices.getAllAuditLogs();
+        const data = await AuditServices.getAllAuditLogs(token as string);
         setAuditLogs(data);
       } catch (error) {
         console.error('Error fetching audit logs:', error);
@@ -34,7 +36,7 @@ export default function AuditPage() {
   const handleCreateAuditLog = async (data: AuditLogFormData) => {
     setLoading(true);
     try {
-      const result = await AuditServices.createAuditLog(data);
+      const result = await AuditServices.createAuditLog(data, token as string);
       if (result.success) {
         setAuditLogs([result.data, ...auditLogs]);
         setDialogOpen(false);

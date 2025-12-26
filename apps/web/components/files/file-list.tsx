@@ -5,6 +5,7 @@ import { Button } from '@repo/ui/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { Badge } from '@repo/ui/components/ui/badge';
 import { FileServices } from '@/services/fileServices';
+import { useAuthStore } from '@/lib/auth-store';
 
 interface FileListProps {
   refreshTrigger?: number;
@@ -14,13 +15,14 @@ export function FileList({ refreshTrigger }: FileListProps) {
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const token = useAuthStore.getState().token;
 
   const fetchFiles = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const result = await FileServices.getAllFiles();
+      const result = await FileServices.getAllFiles(token as string);
       
       if (result.success) {
         setFiles(result.data || []);
@@ -44,7 +46,7 @@ export function FileList({ refreshTrigger }: FileListProps) {
     }
 
     try {
-      const result = await FileServices.deleteFile(fileId);
+      const result = await FileServices.deleteFile(fileId, token as string);
       
       if (result.success) {
         setFiles(files.filter(file => file.id !== fileId));

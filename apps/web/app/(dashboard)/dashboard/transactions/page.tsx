@@ -12,6 +12,7 @@ import { StatsCards } from "@/components/card/stats-cards";
 import { GenericForm } from "@/components/generic-form";
 import { Eye, RefreshCw, ExternalLink, ArrowUpDown, DollarSign, Clock, CheckCircle, XCircle } from "lucide-react";
 import { Badge } from "@repo/ui/components/ui/badge";
+import { useAuthStore } from "@/lib/auth-store";
 
 type TransactionFormData = z.infer<typeof TransactionSchema>;
 
@@ -81,11 +82,12 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const token = useAuthStore.getState().token;
+  
   useEffect(() => {
     const getTransactions = async () => {
       try {
-        const data = await BlockchainServices.getAllTransactions();
+        const data = await BlockchainServices.getAllTransactions(token as string);
         setTransactions(data);
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -97,7 +99,7 @@ export default function TransactionsPage() {
   const handleCreateTransaction = async (data: TransactionFormData) => {
     setLoading(true);
     try {
-      const result = await BlockchainServices.createTransaction(data);
+      const result = await BlockchainServices.createTransaction(data, token as string);
       if (result.success) {
         setTransactions([result.data, ...transactions]);
         setDialogOpen(false);
@@ -116,7 +118,7 @@ export default function TransactionsPage() {
 
   const handleRefreshTransaction = async (transaction: any) => {
     try {
-      const result = await BlockchainServices.refreshTransaction(transaction.id);
+      const result = await BlockchainServices.refreshTransaction(transaction.id, token as string);
       if (result.success) {
         setTransactions(transactions.map(t =>
           t.id === transaction.id ? result.data : t

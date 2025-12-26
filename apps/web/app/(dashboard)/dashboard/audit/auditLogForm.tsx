@@ -1,4 +1,5 @@
 import { GenericForm } from "@/components/generic-form";
+import { useAuthStore } from "@/lib/auth-store";
 import { ContractServices } from "@/services/contractServices";
 import { OrganizationServices } from "@/services/organizationServices";
 import { UserServices } from "@/services/userServices";
@@ -18,18 +19,19 @@ export function AuditLogForm({ onSubmit, loading }: AuditLogFormProps) {
   const [organizations, setOrganizations] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [users, setUsers] = useState([]);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getOrganizations = async () => {
-      const data = await OrganizationServices.getAllOrganizations();
+      const data = await OrganizationServices.getAllOrganizations(token as string);
       setOrganizations(data);
     };
     const getUsers = async () => {
-        const data = await UserServices.getAllUsers();
+        const data = await UserServices.getAllUsers(token as string);
         setUsers(data);
     };
     const getContracts = async () => {
-        const data = await ContractServices.getAllContracts();
+        const data = await ContractServices.getAllContracts(token as string);
         setContracts(data);
     };
     getOrganizations();

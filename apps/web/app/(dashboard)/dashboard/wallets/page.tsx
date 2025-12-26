@@ -10,6 +10,7 @@ import { GenericForm } from '@/components/generic-form';
 import { Plus, Eye, Edit, Trash2, Send, RefreshCw } from 'lucide-react';
 import z from 'zod';
 import { WalletSchema } from '@/validators/wallet-validator';
+import { useAuthStore } from '@/lib/auth-store';
 
 type WalletFormData = z.infer<typeof WalletSchema>;
 
@@ -80,12 +81,13 @@ export default function WalletsPage() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<any>(null);
+  const token = useAuthStore.getState().token;
 
   const handleCreateWallet = async (data: WalletFormData) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token') || '';
-      const result = await WalletServices.createWallet(data);
+      const result = await WalletServices.createWallet(data, token as string);
       
       if (result.success) {
         setWallets([...wallets, result.data]);
@@ -101,7 +103,7 @@ export default function WalletsPage() {
   const handleRefreshBalance = async (walletId: string) => {
     try {
       const token = localStorage.getItem('token') || '';
-      const result = await WalletServices.getWalletBalance(walletId);
+      const result = await WalletServices.getWalletBalance(walletId, token as string);
       
       if (result.success) {
         setWallets(wallets.map(wallet => 

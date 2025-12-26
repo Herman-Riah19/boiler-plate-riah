@@ -1,60 +1,76 @@
 export class ContractServices {
-  static async getAllContracts() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts`);
+  static async getAllContracts(token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getContractById(id: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}`);
+  static async getContractById(id: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async createContract(contractData: any) {
+  static async createContract(contractData: any, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(contractData),
     });
     return res.json();
   }
 
-  static async updateContract(id: string, contractData: any) {
+  static async updateContract(id: string, contractData: any, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(contractData),
     });
     return res.json();
   }
 
-  static async deleteContract(id: string) {
+  static async deleteContract(id: string, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}`, {
       method: 'DELETE',
       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
     return res.json();
   }
 
-  static async deployContract(id: string) {
+  static async deployContract(id: string, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}/deploy`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
     return res.json();
   }
 
-  static async executeContract(id: string, executionData: any) {
+  static async executeContract(id: string, executionData: any, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contracts/${id}/execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(executionData),
     });

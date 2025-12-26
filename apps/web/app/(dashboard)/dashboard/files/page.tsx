@@ -10,7 +10,7 @@ import { StatsCards } from "@/components/card/stats-cards";
 import { GenericForm } from "@/components/generic-form";
 import { Eye, Download, Trash2, Upload, FileText, Image, HardDrive, Database, File } from "lucide-react";
 import { AttachmentSchema } from "@/validators/attachment-validator";
-
+import { useAuthStore } from "@/lib/auth-store";
 
 interface FileUploadFormProps {
   onSubmit: (file: File) => void;
@@ -153,11 +153,12 @@ export default function FilesPage() {
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getFiles = async () => {
       try {
-        const data = await FileServices.getAllFiles();
+        const data = await FileServices.getAllFiles(token as string);
         setFiles(data);
       } catch (error) {
         console.error('Error fetching files:', error);
@@ -169,7 +170,7 @@ export default function FilesPage() {
   const handleUploadFile = async (file: File) => {
     setLoading(true);
     try {
-      const result = await FileServices.uploadFile(file);
+      const result = await FileServices.uploadFile(file, token as string);
       if (result.success) {
         setFiles([...files, result.data]);
         setDialogOpen(false);

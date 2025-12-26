@@ -6,6 +6,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import { Label } from '@repo/ui/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { FileServices } from '@/services/fileServices';
+import { useAuthStore } from '@/lib/auth-store';
 
 interface FileUploadProps {
   onUploadSuccess?: (file: any) => void;
@@ -16,6 +17,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const token = useAuthStore.getState().token;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -38,7 +40,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     setSuccess('');
 
     try {
-      const result = await FileServices.uploadFile(file);
+      const result = await FileServices.uploadFile(file, token as string);
       
       if (result.success) {
         setSuccess('Fichier uploadé avec succès');

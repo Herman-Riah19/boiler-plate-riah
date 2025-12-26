@@ -33,6 +33,7 @@ import { StatsCards } from "@/components/card/stats-cards";
 import { PageHeader } from "@/components/page-header";
 import { EntityList } from "@/components/entity/entity-list";
 import { FormDialog } from "@/components/dialog/form-dialog";
+import { useAuthStore } from "@/lib/auth-store";
 
 interface ConfigFormProps {
   onSubmit: (data: SystemConfigFormData) => void;
@@ -115,7 +116,8 @@ export default function ConfigPage() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("configs");
-
+  const token = useAuthStore.getState().token;
+  
   // Stats cards example (static stats can be replaced with dynamic as needed)
   const stats = [
     {
@@ -147,7 +149,7 @@ export default function ConfigPage() {
 
   const loadConfigs = async () => {
     try {
-      const result = await ConfigServices.getAllConfigs();
+      const result = await ConfigServices.getAllConfigs(token as string);
       if (result.success) {
         setConfigs(result.data || []);
       }
@@ -159,7 +161,7 @@ export default function ConfigPage() {
   const handleCreateConfig = async (data: SystemConfigFormData) => {
     setLoading(true);
     try {
-      const result = await ConfigServices.createConfig(data);
+      const result = await ConfigServices.createConfig(data, token as string);
       if (result.success) {
         setConfigs([...configs, result.data]);
         setDialogOpen(false);
@@ -175,7 +177,7 @@ export default function ConfigPage() {
     if (!confirm("Êtes-vous sûr de vouloir réinitialiser cette configuration?"))
       return;
     try {
-      const result = await ConfigServices.resetConfig(key);
+      const result = await ConfigServices.resetConfig(key, token as string);
       if (result.success) {
         setConfigs(
           configs.map((config) =>
@@ -192,7 +194,7 @@ export default function ConfigPage() {
 
   const handleExport = async () => {
     try {
-      const result = await ConfigServices.exportConfigs();
+      const result = await ConfigServices.exportConfigs(token as string);
       if (result.success) {
         const blob = new Blob([JSON.stringify(result.data, null, 2)], {
           type: "application/json",

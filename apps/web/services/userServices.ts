@@ -3,13 +3,23 @@ import { LoginResponse } from "@/types/authType";
 
 export class UserServices {
 
-  static async getAllUsers() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
+  static async getAllUsers(token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
   
-  static async getUserById(id: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`)
+  static async getUserById(id: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 

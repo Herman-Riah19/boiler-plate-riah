@@ -1,4 +1,5 @@
 import { Controller, Inject } from "@tsed/di";
+import { UseAuth } from "@tsed/platform-middlewares";
 import { BodyParams, PathParams } from "@tsed/platform-params";
 import {
   Delete,
@@ -13,6 +14,7 @@ import {
 } from "@tsed/schema";
 import { Docs } from "@tsed/swagger";
 import { AttachmentModel, AttachmentsRepository } from "prisma/generated";
+import { CustomAuthMiddleware } from "src/middlewares/userMiddleware";
 import { AttachmentDto } from "src/validators/AttachmentDto";
 
 @Controller("/attachments")
@@ -25,6 +27,7 @@ export class AttachmentController {
   @Summary("Retrieve all attachments")
   @Description("Returns a list of all attachment records.")
   @(Returns(200, Array).Of(AttachmentModel))
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   getAllAttachments() {
     return this.attachmentService.findMany();
   }
@@ -33,6 +36,7 @@ export class AttachmentController {
   @Title("Get Attachment")
   @Summary("Retrieve an attachment by ID")
   @Description("Returns the attachment matching the provided ID, or null if not found.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async getAttachmentById(
     @PathParams("id") id: string,
   ): Promise<AttachmentModel | null> {
@@ -48,6 +52,7 @@ export class AttachmentController {
   @Summary("Create a new attachment")
   @Description("Creates a new attachment record with the provided data.")
   @Returns(201, AttachmentModel)
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async createAttachment(
     @BodyParams() data: AttachmentDto,
   ): Promise<AttachmentModel> {
@@ -69,6 +74,7 @@ export class AttachmentController {
     "Updates fields of an existing attachment specified by ID. Only provided fields will be updated.",
   )
   @Returns(200, AttachmentModel)
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async updateAttachment(
     @PathParams("id") id: string,
     @BodyParams() @Groups("update") data: AttachmentDto,
@@ -89,6 +95,7 @@ export class AttachmentController {
   @Title("Delete Attachment")
   @Summary("Delete an attachment")
   @Description("Deletes the attachment with the specified ID and returns the deleted record.")
+  @UseAuth( CustomAuthMiddleware, { role: "VIEWER" } )
   async deleteAttachment(
     @PathParams("id") id: string,
   ): Promise<AttachmentModel> {

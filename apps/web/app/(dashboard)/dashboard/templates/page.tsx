@@ -13,6 +13,7 @@ import { EntityFilters, FilterField } from '@/components/entity/entity-filters';
 import { StatsCards } from '@/components/card/stats-cards';
 import { GenericForm } from '@/components/generic-form';
 import { Eye, Edit, Trash2, Copy, Download, FileText, Users, Star } from 'lucide-react';
+import { useAuthStore } from '@/lib/auth-store';
 
 // Define a Zod schema that respects TemplateVersionDto from @apps/api/src/validators/TemplateVersionDto.ts
 // That is: version (number, required), content (string, required), templateId (string, required), changelog (string or null, optional)
@@ -88,13 +89,14 @@ export default function TemplatesVersionsPage() {
   const [templateVersions, setTemplateVersions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const token = useAuthStore.getState().token;
 
   useEffect(() => {
     const getTemplateVersions = async () => {
       try {
         // You need to implement or adjust the service for fetching versions if needed
         const data = await TemplateServices.getTemplateVersions
-          ? await TemplateServices.getTemplateVersions('')
+          ? await TemplateServices.getTemplateVersions('', token as string)
           : [];
         setTemplateVersions(data);
       } catch (error) {
@@ -109,7 +111,7 @@ export default function TemplatesVersionsPage() {
     try {
       // You need to implement or adjust the service for creating versions if needed
       const result = await TemplateServices.createTemplateVersion
-        ? await TemplateServices.createTemplateVersion('', data)
+        ? await TemplateServices.createTemplateVersion('', data, token as string)
         : { success: false };
       if (result.success) {
         setTemplateVersions([...templateVersions, result.data]);

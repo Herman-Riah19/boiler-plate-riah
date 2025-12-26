@@ -1,58 +1,95 @@
 export class AuditServices {
-  static async getAllAuditLogs() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs`);
+  static async getAllAuditLogs(token: string  ) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getAuditLogById(id: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/${id}`);
+  static async getAuditLogById(id: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getAuditLogsByEntity(entityType: string, entityId: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/entity/${entityType}/${entityId}`);
+  static async getAuditLogsByEntity(entityType: string, entityId: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/entity/${entityType}/${entityId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getAuditLogsByUser(userId: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/user/${userId}`);
+  static async getAuditLogsByUser(userId: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/user/${userId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getAuditLogsByDateRange(startDate: string, endDate: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/date-range?startDate=${startDate}&endDate=${endDate}`);
+  static async getAuditLogsByDateRange(startDate: string, endDate: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/date-range?startDate=${startDate}&endDate=${endDate}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async getAuditLogsByAction(action: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/action/${action}`);
+  static async getAuditLogsByAction(action: string, token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/action/${action}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 
-  static async createAuditLog(auditData: any) {
+  static async createAuditLog(auditData: any, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(auditData),
     });
     return res.json();
   }
 
-  static async exportAuditLogs(filters: any) {
+  static async exportAuditLogs(filters: any, token: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/export`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(filters),
     });
     return res.json();
   }
 
-  static async getAuditStatistics() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/statistics`);
+  static async getAuditStatistics(token: string) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/audit-logs/statistics`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return res.json();
   }
 }
