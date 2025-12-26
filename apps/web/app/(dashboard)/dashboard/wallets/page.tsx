@@ -86,7 +86,6 @@ export default function WalletsPage() {
   const handleCreateWallet = async (data: WalletFormData) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token') || '';
       const result = await WalletServices.createWallet(data, token as string);
       
       if (result.success) {
@@ -102,7 +101,6 @@ export default function WalletsPage() {
 
   const handleRefreshBalance = async (walletId: string) => {
     try {
-      const token = localStorage.getItem('token') || '';
       const result = await WalletServices.getWalletBalance(walletId, token as string);
       
       if (result.success) {
