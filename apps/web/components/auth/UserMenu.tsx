@@ -3,7 +3,6 @@
 import { useAuthStore } from '@/lib/auth-store';
 import { Button } from '@repo/ui/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { UserServices } from '@/services/userServices';
 
 export function UserMenu() {
   const user = useAuthStore((state) => state.user);
@@ -12,12 +11,10 @@ export function UserMenu() {
 
   const handleLogout = async () => {
     try {
-      await UserServices.logout(UserServices.getToken() || '');
+      logout();
       router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      logout();
     }
   };
 

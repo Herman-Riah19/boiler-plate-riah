@@ -78,11 +78,6 @@ export class UserService extends UsersRepository {
     };
   }
 
-  async logout(user: UserModel): Promise<void> {
-    
-    return;
-  }
-
   private async isPasswordValid(
     plainPassword: string,
     hashedPassword: string,

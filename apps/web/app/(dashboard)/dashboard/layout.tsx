@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { Badge } from '@repo/ui/components/ui/badge';
 import { ScrollArea } from '@repo/ui/components/ui/scroll-area';
 import { 
@@ -17,6 +16,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Link as LinkIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/auth-store';
 
 const navigation = [
   { name: 'Tableau de bord', href: '/dashboard', icon: Home },
@@ -36,6 +37,18 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -78,7 +91,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700">Utilisateur</p>
-              <p className="text-xs text-gray-500">admin@example.com</p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
           </div>
         </div>
@@ -100,7 +113,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             
             <div className="flex items-center space-x-4">
               <Badge variant="secondary">Production</Badge>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleLogout}>
                 Déconnexion
               </Button>
             </div>

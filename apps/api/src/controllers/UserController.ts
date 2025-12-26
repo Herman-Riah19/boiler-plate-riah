@@ -73,13 +73,4 @@ export class UserController {
   async getCurrentUser(@Context("user") user: any): Promise<UserModel | null> {
     return this.service.findUnique({ where: { id: user.id } });
   }
-
-  @Post("/logout")
-  @Title("User Logout")
-  @Summary("Logout user")
-  @Description("This endpoint allows users to log out.")
-  @Returns(204)
-  async logoutUser(@UseUserParams("id") user: UserModel): Promise<void> {
-    await this.service.logout(user);
-  }
 }

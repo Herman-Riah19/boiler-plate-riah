@@ -99,15 +99,4 @@ export class UserServices {
 
     return res.json();
   }
-
-  static async logout(token: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    return res.json();
-  }
 }
