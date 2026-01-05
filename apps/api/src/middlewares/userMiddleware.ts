@@ -1,7 +1,7 @@
-import {Req} from "@tsed/platform-http";
-import {Context} from "@tsed/platform-params";
-import {Middleware, MiddlewareMethods} from "@tsed/platform-middlewares";
-import {Forbidden, Unauthorized} from "@tsed/exceptions";
+import { Req } from "@tsed/platform-http";
+import { Context } from "@tsed/platform-params";
+import { Middleware, MiddlewareMethods } from "@tsed/platform-middlewares";
+import { Forbidden, Unauthorized } from "@tsed/exceptions";
 import jwt from "jsonwebtoken";
 
 interface JwtPayload {
@@ -11,14 +11,14 @@ interface JwtPayload {
 }
 
 @Middleware()
-export class CustomAuthMiddleware implements MiddlewareMethods {
+export class UserAuthMiddleware implements MiddlewareMethods {
   public use(@Req() request: Req, @Context() ctx: Context) {
     // retrieve options given to the @UseAuth decorator
-    const options = ctx.endpoint.get(CustomAuthMiddleware) || {};
+    const options = ctx.endpoint.get(UserAuthMiddleware) || {};
 
     // Get token from Authorization header
     const authHeader = request.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new Unauthorized("No token provided");
     }
 
@@ -26,7 +26,10 @@ export class CustomAuthMiddleware implements MiddlewareMethods {
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "default-secret-key") as JwtPayload;
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "default-secret-key",
+      ) as JwtPayload;
 
       // Attach user to request
       (request as any).user = decoded;
@@ -35,7 +38,6 @@ export class CustomAuthMiddleware implements MiddlewareMethods {
       if (options.role && decoded.role !== options.role) {
         throw new Forbidden("Forbidden");
       }
-
     } catch (error) {
       throw new Unauthorized("Invalid token");
     }

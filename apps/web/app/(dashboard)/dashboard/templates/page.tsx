@@ -1,30 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { TemplateServices } from '@/services/templateServices';
-// Remove old validator import and use correct one for TemplateVersionDto if needed
-// import { ContractTemplateSchema } from '@/validators/contract-template-validator';
-import { z } from 'zod';
-import { PageHeader } from '@/components/page-header';
-import { FormDialog } from '@/components/dialog/form-dialog';
-import { EntityList } from '@/components/entity/entity-list';
-import { EntityCard } from '@/components/card/entity-card';
-import { EntityFilters, FilterField } from '@/components/entity/entity-filters';
-import { StatsCards } from '@/components/card/stats-cards';
-import { GenericForm } from '@/components/generic-form';
-import { Eye, Edit, Trash2, Copy, Download, FileText, Users, Star } from 'lucide-react';
-import { useAuthStore } from '@/lib/auth-store';
+import { useState, useEffect } from "react";
+import { TemplateServices } from "@/services/templateServices";
+import { z } from "zod";
+import { PageHeader } from "@/components/page-header";
+import { FormDialog } from "@/components/dialog/form-dialog";
+import { EntityList } from "@/components/entity/entity-list";
+import { EntityCard } from "@/components/card/entity-card";
+import { EntityFilters, FilterField } from "@/components/entity/entity-filters";
+import { StatsCards } from "@/components/card/stats-cards";
+import { GenericForm } from "@/components/generic-form";
+import {
+  Eye,
+  Edit,
+  Trash2,
+  Copy,
+  Download,
+  FileText,
+  Users,
+  Star,
+} from "lucide-react";
+import { useAuthStore } from "@/store/auth-store";
+import {
+  TemplateVersionSchema,
+  TemplateVersionFormData,
+} from "@/validators/template-version-validator";
 
-// Define a Zod schema that respects TemplateVersionDto from @apps/api/src/validators/TemplateVersionDto.ts
-// That is: version (number, required), content (string, required), templateId (string, required), changelog (string or null, optional)
-const TemplateVersionSchema = z.object({
-  version: z.number().int().min(1, "Version must be a positive integer"),
-  content: z.string().min(1, "Content is required"),
-  templateId: z.string().min(1, "Template ID is required"),
-  changelog: z.string().nullable().optional(),
-});
-
-type TemplateVersionFormData = z.infer<typeof TemplateVersionSchema>;
 interface TemplateVersionFormProps {
   onSubmit: (data: TemplateVersionFormData) => void;
   loading?: boolean;
@@ -73,13 +74,13 @@ function TemplateVersionForm({ onSubmit, loading }: TemplateVersionFormProps) {
       schema={TemplateVersionSchema}
       fields={formFields}
       onSubmit={onSubmit}
-      submitLabel={loading ? 'Creating...' : 'Create Version'}
+      submitLabel={loading ? "Creating..." : "Create Version"}
       loading={loading}
       defaultValues={{
         version: 1,
-        content: '',
-        templateId: '',
-        changelog: '',
+        content: "",
+        templateId: "",
+        changelog: "",
       }}
     />
   );
@@ -95,12 +96,13 @@ export default function TemplatesVersionsPage() {
     const getTemplateVersions = async () => {
       try {
         // You need to implement or adjust the service for fetching versions if needed
-        const data = await TemplateServices.getTemplateVersions
-          ? await TemplateServices.getTemplateVersions('', token as string)
-          : [];
+        const data = await TemplateServices.getTemplateVersions(
+          "",
+          token as string,
+        );
         setTemplateVersions(data);
       } catch (error) {
-        console.error('Error fetching template versions:', error);
+        console.error("Error fetching template versions:", error);
       }
     };
     getTemplateVersions();
@@ -110,15 +112,17 @@ export default function TemplatesVersionsPage() {
     setLoading(true);
     try {
       // You need to implement or adjust the service for creating versions if needed
-      const result = await TemplateServices.createTemplateVersion
-        ? await TemplateServices.createTemplateVersion('', data, token as string)
-        : { success: false };
+      const result = await TemplateServices.createTemplateVersion(
+        "",
+        data,
+        token as string,
+      );
       if (result.success) {
         setTemplateVersions([...templateVersions, result.data]);
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating template version:', error);
+      console.error("Error creating template version:", error);
     } finally {
       setLoading(false);
     }
@@ -129,47 +133,49 @@ export default function TemplatesVersionsPage() {
       key={version.id || index}
       title={`Version ${version.version}`}
       subtitle={version.templateId}
-      description={version.changelog || 'No changelog provided'}
+      description={version.changelog || "No changelog provided"}
       status={{
         label: `v${version.version}`,
-        variant: 'default',
+        variant: "default",
       }}
       metadata={[
         {
-          label: 'Content length',
-          value: version.content ? `${version.content.length} chars` : '0 chars',
+          label: "Content length",
+          value: version.content
+            ? `${version.content.length} chars`
+            : "0 chars",
         },
         {
-          label: 'Template ID',
+          label: "Template ID",
           value: version.templateId,
-        }
+        },
       ]}
       actions={[
         {
           icon: <Eye className="h-4 w-4" />,
-          label: 'View Content',
+          label: "View Content",
           onClick: () => handleViewTemplateVersion(version),
         },
         {
           icon: <Edit className="h-4 w-4" />,
-          label: 'Edit',
+          label: "Edit",
           onClick: () => handleEditTemplateVersion(version),
         },
         {
           icon: <Copy className="h-4 w-4" />,
-          label: 'Clone',
+          label: "Clone",
           onClick: () => handleCloneTemplateVersion(version),
         },
         {
           icon: <Download className="h-4 w-4" />,
-          label: 'Download',
+          label: "Download",
           onClick: () => handleDownloadTemplateVersion(version),
         },
         {
           icon: <Trash2 className="h-4 w-4" />,
-          label: 'Delete',
+          label: "Delete",
           onClick: () => handleDeleteTemplateVersion(version),
-          variant: 'destructive' as const,
+          variant: "destructive" as const,
         },
       ]}
     />
@@ -177,67 +183,67 @@ export default function TemplatesVersionsPage() {
 
   // Placeholder handler functions for actions
   const handleViewTemplateVersion = (version: any) => {
-    console.log('View template version:', version);
+    console.log("View template version:", version);
   };
 
   const handleEditTemplateVersion = (version: any) => {
-    console.log('Edit template version:', version);
+    console.log("Edit template version:", version);
   };
 
   const handleDeleteTemplateVersion = (version: any) => {
-    console.log('Delete template version:', version);
+    console.log("Delete template version:", version);
   };
 
   const handleCloneTemplateVersion = (version: any) => {
-    console.log('Clone template version:', version);
+    console.log("Clone template version:", version);
   };
 
   const handleDownloadTemplateVersion = (version: any) => {
-    console.log('Download template version:', version);
+    console.log("Download template version:", version);
   };
 
   const filterFields: FilterField[] = [
     {
-      name: 'version',
-      label: 'Version',
-      type: 'text',
-      placeholder: 'All versions',
+      name: "version",
+      label: "Version",
+      type: "text",
+      placeholder: "All versions",
     },
     {
-      name: 'templateId',
-      label: 'Template ID',
-      type: 'text',
-      placeholder: 'Filter by Template ID',
+      name: "templateId",
+      label: "Template ID",
+      type: "text",
+      placeholder: "Filter by Template ID",
     },
     {
-      name: 'search',
-      label: 'Search Content',
-      type: 'text',
-      placeholder: 'Search in content or changelog...',
+      name: "search",
+      label: "Search Content",
+      type: "text",
+      placeholder: "Search in content or changelog...",
     },
   ];
 
   const stats = [
     {
-      title: 'Total Versions',
+      title: "Total Versions",
       value: templateVersions.length,
-      description: 'Active template versions',
+      description: "Active template versions",
       icon: FileText,
-      trend: { value: 3, label: 'from last month', positive: true },
+      trend: { value: 3, label: "from last month", positive: true },
     },
     {
-      title: 'Templates',
+      title: "Templates",
       value: new Set(templateVersions.map((v) => v.templateId)).size,
-      description: 'Different templates',
+      description: "Different templates",
       icon: Users,
-      trend: { value: 1, label: 'new this month', positive: true },
+      trend: { value: 1, label: "new this month", positive: true },
     },
     {
-      title: 'Unique Version Numbers',
+      title: "Unique Version Numbers",
       value: new Set(templateVersions.map((v) => v.version)).size,
-      description: 'Versions used',
+      description: "Versions used",
       icon: Star,
-      trend: { value: 0, label: 'month over month', positive: true },
+      trend: { value: 0, label: "month over month", positive: true },
     },
   ];
 
@@ -249,7 +255,7 @@ export default function TemplatesVersionsPage() {
         title="Template Versions"
         description="Manage individual versions of your smart contract templates"
         action={{
-          label: 'New Template Version',
+          label: "New Template Version",
           onClick: () => setDialogOpen(true),
         }}
       />
@@ -257,8 +263,8 @@ export default function TemplatesVersionsPage() {
       <EntityFilters
         title="Filter Versions"
         fields={filterFields}
-        onFilter={() => { }}
-        onReset={() => { }}
+        onFilter={() => {}}
+        onReset={() => {}}
       />
 
       <EntityList
@@ -268,7 +274,7 @@ export default function TemplatesVersionsPage() {
         renderItem={renderTemplateVersionCard}
         emptyMessage="No template versions found"
         emptyAction={{
-          label: 'Create your first version',
+          label: "Create your first version",
           onClick: () => setDialogOpen(true),
         }}
       />
@@ -280,7 +286,10 @@ export default function TemplatesVersionsPage() {
         description="Define a version for your template"
         maxWidth="max-w-4xl overflow-y-auto"
       >
-        <TemplateVersionForm onSubmit={handleCreateTemplateVersion} loading={loading} />
+        <TemplateVersionForm
+          onSubmit={handleCreateTemplateVersion}
+          loading={loading}
+        />
       </FormDialog>
     </div>
   );

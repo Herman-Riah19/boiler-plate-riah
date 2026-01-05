@@ -1,40 +1,34 @@
+import { headersAuthFetch } from "@/utils/header-fetch";
 import { TransactionFormData } from "@/validators/transaction-validator";
 
 export class BlockchainServices {
   static async getAllTransactions(token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      header,
     );
     return res.json();
   }
 
   static async getTransactionById(id: string, token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions/${id}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      header,
     );
     return res.json();
   }
 
   static async createTransaction(data: TransactionFormData, token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        headers: header.headers,
         body: JSON.stringify(data),
-      }
+      },
     );
     if (!res.ok) {
       const errorBody = await res.text();
@@ -44,42 +38,30 @@ export class BlockchainServices {
 
     return res.json();
   }
-  
+
   static async refreshTransaction(id: string, token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions/${id}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      header,
     );
     return res.json();
   }
 
   static async getTransactionStatus(id: string, token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain-transactions/${id}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      header,
     );
     return res.json();
   }
 
   static async getBlockByNumber(blockNumber: number, token: string) {
+    const header = headersAuthFetch(token);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/blockchain/blocks/${blockNumber}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      header,
     );
     return res.json();
   }

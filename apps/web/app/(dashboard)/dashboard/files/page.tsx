@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { FileServices } from "@/services/fileServices";
@@ -8,9 +8,19 @@ import { EntityList } from "@/components/entity/entity-list";
 import { EntityCard } from "@/components/card/entity-card";
 import { StatsCards } from "@/components/card/stats-cards";
 import { GenericForm } from "@/components/generic-form";
-import { Eye, Download, Trash2, Upload, FileText, Image, HardDrive, Database, File } from "lucide-react";
+import {
+  Eye,
+  Download,
+  Trash2,
+  Upload,
+  FileText,
+  Image,
+  HardDrive,
+  Database,
+  File,
+} from "lucide-react";
 import { AttachmentSchema } from "@/validators/attachment-validator";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 interface FileUploadFormProps {
   onSubmit: (file: File) => void;
@@ -26,7 +36,7 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
     if (file) {
       setSelectedFile(file);
       // Generate preview for images
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = (e) => {
           setPreview(e.target?.result as string);
@@ -39,12 +49,22 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
   };
 
   const getFileCategory = (file: File): string => {
-    if (file.type.startsWith('image/')) return 'image';
-    if (file.type.startsWith('video/')) return 'video';
-    if (file.type.startsWith('audio/')) return 'audio';
-    if (file.type.includes('pdf') || file.type.includes('document') || file.type.includes('text')) return 'document';
-    if (file.type.includes('zip') || file.type.includes('rar') || file.type.includes('tar')) return 'archive';
-    return 'other';
+    if (file.type.startsWith("image/")) return "image";
+    if (file.type.startsWith("video/")) return "video";
+    if (file.type.startsWith("audio/")) return "audio";
+    if (
+      file.type.includes("pdf") ||
+      file.type.includes("document") ||
+      file.type.includes("text")
+    )
+      return "document";
+    if (
+      file.type.includes("zip") ||
+      file.type.includes("rar") ||
+      file.type.includes("tar")
+    )
+      return "archive";
+    return "other";
   };
 
   const formFields = [
@@ -116,12 +136,18 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
         <div className="space-y-4">
           {preview && (
             <div className="flex justify-center">
-              <img src={preview} alt="Preview" className="max-h-32 max-w-32 object-contain rounded" />
+              <img
+                src={preview}
+                alt="Preview"
+                className="max-h-32 max-w-32 object-contain rounded"
+              />
             </div>
           )}
           <div className="text-center">
             <p className="text-sm text-gray-600">{selectedFile.name}</p>
-            <p className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</p>
+            <p className="text-xs text-gray-500">
+              {formatFileSize(selectedFile.size)}
+            </p>
           </div>
         </div>
       )}
@@ -133,7 +159,7 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
         submitLabel={loading ? "Upload..." : "Uploader le fichier"}
         loading={loading}
         defaultValues={{
-          filename: selectedFile?.name.split('.')[0] || "",
+          filename: selectedFile?.name.split(".")[0] || "",
           category: selectedFile ? getFileCategory(selectedFile) : "other",
         }}
       />
@@ -142,11 +168,11 @@ function FileUploadForm({ onSubmit, loading }: FileUploadFormProps) {
 }
 
 function formatFileSize(bytes: number) {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
 export default function FilesPage() {
@@ -161,7 +187,7 @@ export default function FilesPage() {
         const data = await FileServices.getAllFiles(token as string);
         setFiles(data);
       } catch (error) {
-        console.error('Error fetching files:', error);
+        console.error("Error fetching files:", error);
       }
     };
     getFiles();
@@ -176,7 +202,7 @@ export default function FilesPage() {
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error("Error uploading file:", error);
     } finally {
       setLoading(false);
     }
@@ -184,29 +210,31 @@ export default function FilesPage() {
 
   const handleViewFile = (file: any) => {
     // TODO: Implement view functionality
-    console.log('View file:', file);
+    console.log("View file:", file);
   };
 
   const handleDownloadFile = (file: any) => {
     try {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = file.url || file.fileUrl;
       link.download = file.filename || file.name;
       link.click();
     } catch (error) {
-      console.error('Error downloading file:', error);
+      console.error("Error downloading file:", error);
     }
   };
 
   const handleDeleteFile = (file: any) => {
     // TODO: Implement delete functionality
-    console.log('Delete file:', file);
+    console.log("Delete file:", file);
   };
 
   const getFileIcon = (filename: string) => {
-    const ext = filename.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext || '')) return <Image className="h-4 w-4" />;
-    if (['pdf', 'doc', 'docx', 'txt'].includes(ext || '')) return <FileText className="h-4 w-4" />;
+    const ext = filename.split(".").pop()?.toLowerCase();
+    if (["jpg", "jpeg", "png", "gif", "svg"].includes(ext || ""))
+      return <Image className="h-4 w-4" />;
+    if (["pdf", "doc", "docx", "txt"].includes(ext || ""))
+      return <FileText className="h-4 w-4" />;
     return <File className="h-4 w-4" />;
   };
 
@@ -214,11 +242,14 @@ export default function FilesPage() {
     <EntityCard
       key={file.id || index}
       title={file.filename}
-      description={file.description || 'No description'}
+      description={file.description || "No description"}
       metadata={[
         { label: "Size", value: formatFileSize(file.size || 0) },
-        { label: "Type", value: file.mimeType || 'Unknown' },
-        { label: "Uploaded", value: new Date(file.createdAt).toLocaleDateString() },
+        { label: "Type", value: file.mimeType || "Unknown" },
+        {
+          label: "Uploaded",
+          value: new Date(file.createdAt).toLocaleDateString(),
+        },
       ]}
       actions={[
         {
@@ -258,14 +289,16 @@ export default function FilesPage() {
     },
     {
       title: "Images",
-      value: files.filter(f => f.mimeType?.startsWith('image/')).length,
+      value: files.filter((f) => f.mimeType?.startsWith("image/")).length,
       description: "Image files",
       icon: Image,
       trend: { value: 3, label: "from last week", positive: true },
     },
     {
       title: "Documents",
-      value: files.filter(f => f.mimeType?.includes('pdf') || f.mimeType?.includes('document')).length,
+      value: files.filter(
+        (f) => f.mimeType?.includes("pdf") || f.mimeType?.includes("document"),
+      ).length,
       description: "Document files",
       icon: FileText,
       trend: { value: 1, label: "from last week", positive: false },
@@ -305,10 +338,7 @@ export default function FilesPage() {
         description="Select and upload a file for your contracts"
         maxWidth="max-w-2xl overflow-y-auto"
       >
-        <FileUploadForm
-          onSubmit={handleUploadFile}
-          loading={loading}
-        />
+        <FileUploadForm onSubmit={handleUploadFile} loading={loading} />
       </FormDialog>
     </div>
   );

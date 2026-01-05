@@ -1,25 +1,23 @@
-import { useAuthHeaders, useAuthStore, User } from "@/lib/auth-store";
+import { useAuthStore, User } from "@/store/auth-store";
 import { LoginResponse } from "@/types/authType";
+import { headersAuthFetch } from "@/utils/header-fetch";
 
 export class UserServices {
-
   static async getAllUsers(token: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    const header = headersAuthFetch(token);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
+      header,
+    );
     return res.json();
   }
-  
+
   static async getUserById(id: string, token: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    const header = headersAuthFetch(token);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
+      header,
+    );
     return res.json();
   }
 
@@ -28,13 +26,16 @@ export class UserServices {
     password: string;
     name?: string;
   }) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
       },
-      body: JSON.stringify(userData),
-    });
+    );
 
     return res.json();
   }
@@ -43,13 +44,16 @@ export class UserServices {
     email: string;
     password: string;
   }): Promise<LoginResponse> {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
       },
-      body: JSON.stringify(credentials),
-    });
+    );
     const data = await res.json();
 
     useAuthStore.getState().login(data.user, data.token);
@@ -73,24 +77,25 @@ export class UserServices {
   }
 
   static async getProfile(token: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    const header = headersAuthFetch(token);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`,
+      header,
+    );
 
     return res.json();
   }
 
   static async updateProfile(token: string, userData: any) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+    const header = headersAuthFetch(token);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`,
+      {
+        method: "PUT",
+        headers: header.headers,
+        body: JSON.stringify(userData),
       },
-      body: JSON.stringify(userData),
-    });
+    );
 
     return res.json();
   }

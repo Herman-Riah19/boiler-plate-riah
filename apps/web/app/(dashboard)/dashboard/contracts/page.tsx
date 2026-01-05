@@ -11,7 +11,7 @@ import { EntityList } from "@/components/entity/entity-list";
 import { EntityCard } from "@/components/card/entity-card";
 import { GenericForm } from "@/components/generic-form";
 import { Eye, Edit, Trash2, Play } from "lucide-react";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 type ContractFormData = z.infer<typeof SmartContractSchema>;
 
@@ -26,7 +26,9 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
 
   useEffect(() => {
     const getOrganisations = async () => {
-      const data = await OrganizationServices.getAllOrganizations(token as string);
+      const data = await OrganizationServices.getAllOrganizations(
+        token as string,
+      );
       setOrganisations(data);
     };
     getOrganisations();
@@ -62,7 +64,7 @@ function ContractForm({ onSubmit, loading }: ContractFormProps) {
       name: "organizationId",
       label: "Organization",
       type: "select" as const,
-      options: organisations.map(({id, name}: any) => ({
+      options: organisations.map(({ id, name }: any) => ({
         value: id,
         label: name,
       })),
@@ -143,7 +145,7 @@ export default function ContractsPage() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const token = useAuthStore.getState().token;
+  const token = useAuthStore().token;
 
   useEffect(() => {
     const getContracts = async () => {
@@ -157,7 +159,10 @@ export default function ContractsPage() {
     setLoading(true);
     try {
       console.log("form data: ", data.organizationId);
-      const result = await ContractServices.createContract(data, token as string);
+      const result = await ContractServices.createContract(
+        data,
+        token as string,
+      );
 
       if (result) {
         setContracts([...contracts, result.data]);
@@ -177,8 +182,8 @@ export default function ContractsPage() {
       if (result.success) {
         setContracts(
           contracts.map((contract) =>
-            contract.id === id ? { ...contract, status: "deployed" } : contract
-          )
+            contract.id === id ? { ...contract, status: "deployed" } : contract,
+          ),
         );
       }
     } catch (error) {
@@ -201,8 +206,13 @@ export default function ContractsPage() {
     console.log("Delete contract:", contract);
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  const getStatusVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       deployed: "default",
       draft: "secondary",
       error: "destructive",
@@ -222,10 +232,14 @@ export default function ContractsPage() {
       metadata={[
         { label: "Version", value: contract.version?.toString() || "N/A" },
         { label: "Chain ID", value: contract.chainId?.toString() || "N/A" },
-        ...(contract.smartContractAddress ? [{
-          label: "Address",
-          value: `${contract.smartContractAddress.slice(0, 10)}...`
-        }] : []),
+        ...(contract.smartContractAddress
+          ? [
+              {
+                label: "Address",
+                value: `${contract.smartContractAddress.slice(0, 10)}...`,
+              },
+            ]
+          : []),
       ]}
       actions={[
         {
@@ -238,11 +252,15 @@ export default function ContractsPage() {
           label: "Edit",
           onClick: () => handleEditContract(contract),
         },
-        ...(contract.status === "draft" ? [{
-          icon: <Play className="h-4 w-4" />,
-          label: "Deploy",
-          onClick: () => handleDeployContract(contract.id),
-        }] : []),
+        ...(contract.status === "draft"
+          ? [
+              {
+                icon: <Play className="h-4 w-4" />,
+                label: "Deploy",
+                onClick: () => handleDeployContract(contract.id),
+              },
+            ]
+          : []),
         {
           icon: <Trash2 className="h-4 w-4" />,
           label: "Delete",

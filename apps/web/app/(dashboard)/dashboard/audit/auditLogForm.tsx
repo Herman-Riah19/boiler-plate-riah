@@ -1,5 +1,5 @@
 import { GenericForm } from "@/components/generic-form";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { ContractServices } from "@/services/contractServices";
 import { OrganizationServices } from "@/services/organizationServices";
 import { UserServices } from "@/services/userServices";
@@ -45,7 +45,7 @@ export function AuditLogForm({ onSubmit, loading }: AuditLogFormProps) {
       label: "ID du contrat",
       type: "select" as const,
       placeholder: "contract_123",
-      options: contracts.map(({id}: any) => ({
+      options: contracts.map(({ id }: any) => ({
         value: id,
         label: id,
       })),
@@ -57,7 +57,7 @@ export function AuditLogForm({ onSubmit, loading }: AuditLogFormProps) {
       label: "ID de l'utilisateur",
       type: "select" as const,
       placeholder: "user_456",
-      options: users.map(({id, name}: any) => ({
+      options: users.map(({ id, name }: any) => ({
         value: id,
         label: name,
       })),
@@ -69,7 +69,7 @@ export function AuditLogForm({ onSubmit, loading }: AuditLogFormProps) {
       label: "ID de l'organisation",
       type: "select" as const,
       placeholder: "org_789",
-      options: organizations.map(({id, name}: any) => ({
+      options: organizations.map(({ id, name }: any) => ({
         value: id,
         label: name,
       })),

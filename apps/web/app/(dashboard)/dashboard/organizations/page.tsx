@@ -1,20 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import * as z from 'zod';
-import { OrganizationServices } from '@/services/organizationServices';
-import { OrganizationSchema, MemberSchema } from '@/validators/organization-validator';
-import { PageHeader } from '@/components/page-header';
-import { FormDialog } from '@/components/dialog/form-dialog';
-import { EntityList } from '@/components/entity/entity-list';
-import { EntityCard } from '@/components/card/entity-card';
-import { GenericForm } from '@/components/generic-form';
-import { Eye, Edit, Trash2, UserPlus } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/ui/avatar';
-import { useAuthStore } from '@/lib/auth-store';
-
-type OrganizationFormData = z.infer<typeof OrganizationSchema>;
-type MemberFormData = z.infer<typeof MemberSchema>;
+import { useEffect, useState } from "react";
+import * as z from "zod";
+import { OrganizationServices } from "@/services/organizationServices";
+import {
+  OrganizationSchema,
+  OrganizationFormData,
+  MemberSchema,
+  MemberFormData,
+} from "@/validators/organization-validator";
+import { PageHeader } from "@/components/page-header";
+import { FormDialog } from "@/components/dialog/form-dialog";
+import { EntityList } from "@/components/entity/entity-list";
+import { EntityCard } from "@/components/card/entity-card";
+import { GenericForm } from "@/components/generic-form";
+import { Eye, Edit, Trash2, UserPlus } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@repo/ui/components/ui/avatar";
+import { useAuthStore } from "@/store/auth-store";
 
 interface OrganizationFormProps {
   onSubmit: (data: OrganizationFormData) => void;
@@ -74,10 +80,10 @@ function OrganizationForm({ onSubmit, loading }: OrganizationFormProps) {
       schema={OrganizationSchema}
       fields={formFields}
       onSubmit={onSubmit}
-      submitLabel={loading ? 'Création...' : 'Créer l\'organisation'}
+      submitLabel={loading ? "Création..." : "Créer l'organisation"}
       loading={loading}
       defaultValues={{
-        type: 'startup',
+        type: "startup",
       }}
     />
   );
@@ -114,10 +120,10 @@ function MemberForm({ onSubmit, loading }: MemberFormProps) {
       schema={MemberSchema}
       fields={formFields}
       onSubmit={onSubmit}
-      submitLabel={loading ? 'Ajout...' : 'Ajouter le membre'}
+      submitLabel={loading ? "Ajout..." : "Ajouter le membre"}
       loading={loading}
       defaultValues={{
-        role: 'member',
+        role: "member",
       }}
     />
   );
@@ -131,10 +137,12 @@ export default function OrganizationsPage() {
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const token = useAuthStore.getState().token;
-  
+
   useEffect(() => {
     const getOrganizations = async () => {
-      const data = await OrganizationServices.getAllOrganizations(token as string);
+      const data = await OrganizationServices.getAllOrganizations(
+        token as string,
+      );
       setOrganizations(data);
     };
     getOrganizations();
@@ -143,14 +151,17 @@ export default function OrganizationsPage() {
   const handleCreateOrganization = async (data: OrganizationFormData) => {
     setLoading(true);
     try {
-      const result = await OrganizationServices.createOrganization(data, token as string);
+      const result = await OrganizationServices.createOrganization(
+        data,
+        token as string,
+      );
 
       if (result.success) {
         setOrganizations([...organizations, result.data]);
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating organization:', error);
+      console.error("Error creating organization:", error);
     } finally {
       setLoading(false);
     }
@@ -159,14 +170,18 @@ export default function OrganizationsPage() {
   const handleAddMember = async (data: MemberFormData) => {
     setMemberLoading(true);
     try {
-      const result = await OrganizationServices.addMember(selectedOrg.id, data, token as string);
+      const result = await OrganizationServices.addMember(
+        selectedOrg.id,
+        data,
+        token as string,
+      );
 
       if (result.success) {
         setMemberDialogOpen(false);
         setSelectedOrg(null);
       }
     } catch (error) {
-      console.error('Error adding member:', error);
+      console.error("Error adding member:", error);
     } finally {
       setMemberLoading(false);
     }
@@ -174,17 +189,17 @@ export default function OrganizationsPage() {
 
   const handleViewOrganization = (org: any) => {
     // TODO: Implement view functionality
-    console.log('View organization:', org);
+    console.log("View organization:", org);
   };
 
   const handleEditOrganization = (org: any) => {
     // TODO: Implement edit functionality
-    console.log('Edit organization:', org);
+    console.log("Edit organization:", org);
   };
 
   const handleDeleteOrganization = (org: any) => {
     // TODO: Implement delete functionality
-    console.log('Delete organization:', org);
+    console.log("Delete organization:", org);
   };
 
   const handleAddMemberClick = (org: any) => {
@@ -192,21 +207,29 @@ export default function OrganizationsPage() {
     setMemberDialogOpen(true);
   };
 
-  const getTypeVariant = (type: string): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      startup: 'default',
-      enterprise: 'secondary',
-      nonprofit: 'outline',
-      government: 'destructive',
+  const getTypeVariant = (
+    type: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      startup: "default",
+      enterprise: "secondary",
+      nonprofit: "outline",
+      government: "destructive",
     };
-    return variants[type] || 'outline';
+    return variants[type] || "outline";
   };
 
   const renderOrganizationCard = (org: any, index: number) => {
     const metadata = [];
     if (org.website) metadata.push({ label: "Site", value: org.website });
     if (org.email) metadata.push({ label: "Email", value: org.email });
-    metadata.push({ label: "Membres", value: (org.memberCount || 0).toString() });
+    metadata.push({
+      label: "Membres",
+      value: (org.memberCount || 0).toString(),
+    });
 
     return (
       <EntityCard
@@ -250,7 +273,7 @@ export default function OrganizationsPage() {
                 <Avatar key={index} className="h-6 w-6 border-2 border-white">
                   <AvatarImage src={member.avatar} />
                   <AvatarFallback className="text-xs">
-                    {member.name?.charAt(0) || 'U'}
+                    {member.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
               ))}
@@ -296,7 +319,10 @@ export default function OrganizationsPage() {
         description="Définissez les informations de votre organisation"
         maxWidth="max-w-2xl overflow-y-auto"
       >
-        <OrganizationForm onSubmit={handleCreateOrganization} loading={loading} />
+        <OrganizationForm
+          onSubmit={handleCreateOrganization}
+          loading={loading}
+        />
       </FormDialog>
 
       <FormDialog

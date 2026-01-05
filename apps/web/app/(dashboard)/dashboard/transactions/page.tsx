@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { BlockchainServices } from "@/services/blockchainServices";
-import { TransactionSchema } from "@/validators/transaction-validator";
+import {
+  TransactionSchema,
+  TransactionFormData,
+} from "@/validators/transaction-validator";
 import * as z from "zod";
 import { PageHeader } from "@/components/page-header";
 import { FormDialog } from "@/components/dialog/form-dialog";
@@ -10,11 +13,16 @@ import { EntityList } from "@/components/entity/entity-list";
 import { EntityCard } from "@/components/card/entity-card";
 import { StatsCards } from "@/components/card/stats-cards";
 import { GenericForm } from "@/components/generic-form";
-import { Eye, RefreshCw, ExternalLink, ArrowUpDown, DollarSign, Clock, CheckCircle, XCircle } from "lucide-react";
-import { Badge } from "@repo/ui/components/ui/badge";
-import { useAuthStore } from "@/lib/auth-store";
-
-type TransactionFormData = z.infer<typeof TransactionSchema>;
+import {
+  Eye,
+  RefreshCw,
+  ExternalLink,
+  ArrowUpDown,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { useAuthStore } from "@/store/auth-store";
 
 interface TransactionFormProps {
   onSubmit: (data: TransactionFormData) => void;
@@ -83,14 +91,16 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const token = useAuthStore.getState().token;
-  
+
   useEffect(() => {
     const getTransactions = async () => {
       try {
-        const data = await BlockchainServices.getAllTransactions(token as string);
+        const data = await BlockchainServices.getAllTransactions(
+          token as string,
+        );
         setTransactions(data);
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        console.error("Error fetching transactions:", error);
       }
     };
     getTransactions();
@@ -99,13 +109,16 @@ export default function TransactionsPage() {
   const handleCreateTransaction = async (data: TransactionFormData) => {
     setLoading(true);
     try {
-      const result = await BlockchainServices.createTransaction(data, token as string);
+      const result = await BlockchainServices.createTransaction(
+        data,
+        token as string,
+      );
       if (result.success) {
         setTransactions([result.data, ...transactions]);
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating transaction:', error);
+      console.error("Error creating transaction:", error);
     } finally {
       setLoading(false);
     }
@@ -113,29 +126,37 @@ export default function TransactionsPage() {
 
   const handleViewTransaction = (transaction: any) => {
     // TODO: Implement view functionality
-    console.log('View transaction:', transaction);
+    console.log("View transaction:", transaction);
   };
 
   const handleRefreshTransaction = async (transaction: any) => {
     try {
-      const result = await BlockchainServices.refreshTransaction(transaction.id, token as string);
+      const result = await BlockchainServices.refreshTransaction(
+        transaction.id,
+        token as string,
+      );
       if (result.success) {
-        setTransactions(transactions.map(t =>
-          t.id === transaction.id ? result.data : t
-        ));
+        setTransactions(
+          transactions.map((t) => (t.id === transaction.id ? result.data : t)),
+        );
       }
     } catch (error) {
-      console.error('Error refreshing transaction:', error);
+      console.error("Error refreshing transaction:", error);
     }
   };
 
   const handleViewOnExplorer = (transaction: any) => {
     const explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
-    window.open(explorerUrl, '_blank');
+    window.open(explorerUrl, "_blank");
   };
 
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  const getStatusBadgeVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       pending: "secondary",
       confirmed: "default",
       failed: "destructive",
@@ -156,7 +177,11 @@ export default function TransactionsPage() {
   const renderTransactionCard = (transaction: any, index: number) => (
     <EntityCard
       key={transaction.id || index}
-      title={transaction.hash ? formatAddress(transaction.hash) : `Transaction ${index + 1}`}
+      title={
+        transaction.hash
+          ? formatAddress(transaction.hash)
+          : `Transaction ${index + 1}`
+      }
       description={`From ${formatAddress(transaction.from)} to ${formatAddress(transaction.to)}`}
       status={{
         label: transaction.status || "Unknown",
@@ -165,7 +190,10 @@ export default function TransactionsPage() {
       metadata={[
         { label: "Value", value: formatValue(transaction.value || 0) },
         { label: "Gas Used", value: transaction.gasUsed?.toString() || "N/A" },
-        { label: "Block", value: transaction.blockNumber?.toString() || "Pending" },
+        {
+          label: "Block",
+          value: transaction.blockNumber?.toString() || "Pending",
+        },
         { label: "Chain ID", value: transaction.chainId?.toString() || "1" },
       ]}
       actions={[
@@ -179,11 +207,15 @@ export default function TransactionsPage() {
           label: "Refresh",
           onClick: () => handleRefreshTransaction(transaction),
         },
-        ...(transaction.hash ? [{
-          icon: <ExternalLink className="h-4 w-4" />,
-          label: "View on Explorer",
-          onClick: () => handleViewOnExplorer(transaction),
-        }] : []),
+        ...(transaction.hash
+          ? [
+              {
+                icon: <ExternalLink className="h-4 w-4" />,
+                label: "View on Explorer",
+                onClick: () => handleViewOnExplorer(transaction),
+              },
+            ]
+          : []),
       ]}
     />
   );
@@ -198,21 +230,23 @@ export default function TransactionsPage() {
     },
     {
       title: "Confirmed",
-      value: transactions.filter(t => t.status === 'confirmed' || t.status === 'mined').length,
+      value: transactions.filter(
+        (t) => t.status === "confirmed" || t.status === "mined",
+      ).length,
       description: "Successfully confirmed",
       icon: CheckCircle,
       trend: { value: 3, label: "confirmed today", positive: true },
     },
     {
       title: "Pending",
-      value: transactions.filter(t => t.status === 'pending').length,
+      value: transactions.filter((t) => t.status === "pending").length,
       description: "Awaiting confirmation",
       icon: Clock,
       trend: { value: 1, label: "still pending", positive: false },
     },
     {
       title: "Failed",
-      value: transactions.filter(t => t.status === 'failed').length,
+      value: transactions.filter((t) => t.status === "failed").length,
       description: "Transaction failures",
       icon: XCircle,
       trend: { value: 0, label: "no failures", positive: true },

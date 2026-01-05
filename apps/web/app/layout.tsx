@@ -2,7 +2,6 @@ import localFont from "next/font/local";
 import "@repo/ui/globals.css";
 import { ThemeProviders } from "@/components/theme-provider";
 import type { ReactNode } from "react";
-import { Navbar } from "@/components/navbar/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,10 +22,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased `}
       >
-        <ThemeProviders>
-          <Navbar />
-          {children}
-        </ThemeProviders>
+        <ThemeProviders>{children}</ThemeProviders>
       </body>
     </html>
   );

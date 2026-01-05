@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { WalletServices } from '@/services/walletServices';
-import { PageHeader } from '@/components/page-header';
-import { FormDialog } from '@/components/dialog/form-dialog';
-import { EntityList } from '@/components/entity/entity-list';
-import { EntityCard } from '@/components/card/entity-card';
-import { GenericForm } from '@/components/generic-form';
-import { Plus, Eye, Edit, Trash2, Send, RefreshCw } from 'lucide-react';
-import z from 'zod';
-import { WalletSchema } from '@/validators/wallet-validator';
-import { useAuthStore } from '@/lib/auth-store';
+import { useState } from "react";
+import { WalletServices } from "@/services/walletServices";
+import { PageHeader } from "@/components/page-header";
+import { FormDialog } from "@/components/dialog/form-dialog";
+import { EntityList } from "@/components/entity/entity-list";
+import { EntityCard } from "@/components/card/entity-card";
+import { GenericForm } from "@/components/generic-form";
+import { Eye, Edit, Trash2, Send, RefreshCw } from "lucide-react";
+import z from "zod";
+import { WalletSchema } from "@/validators/wallet-validator";
+import { useAuthStore } from "@/store/auth-store";
 
 type WalletFormData = z.infer<typeof WalletSchema>;
 
@@ -66,11 +66,11 @@ function WalletForm({ onSubmit, loading }: WalletFormProps) {
       schema={WalletSchema}
       fields={formFields}
       onSubmit={onSubmit}
-      submitLabel={loading ? 'Création...' : 'Créer le wallet'}
+      submitLabel={loading ? "Création..." : "Créer le wallet"}
       loading={loading}
       defaultValues={{
-        type: 'personal',
-        network: 'ethereum',
+        type: "personal",
+        network: "ethereum",
       }}
     />
   );
@@ -87,13 +87,13 @@ export default function WalletsPage() {
     setLoading(true);
     try {
       const result = await WalletServices.createWallet(data, token as string);
-      
+
       if (result.success) {
         setWallets([...wallets, result.data]);
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating wallet:', error);
+      console.error("Error creating wallet:", error);
     } finally {
       setLoading(false);
     }
@@ -101,45 +101,56 @@ export default function WalletsPage() {
 
   const handleRefreshBalance = async (walletId: string) => {
     try {
-      const result = await WalletServices.getWalletBalance(walletId, token as string);
-      
+      const result = await WalletServices.getWalletBalance(
+        walletId,
+        token as string,
+      );
+
       if (result.success) {
-        setWallets(wallets.map(wallet => 
-          wallet.id === walletId ? { ...wallet, balance: result.balance } : wallet
-        ));
+        setWallets(
+          wallets.map((wallet) =>
+            wallet.id === walletId
+              ? { ...wallet, balance: result.balance }
+              : wallet,
+          ),
+        );
       }
     } catch (error) {
-      console.error('Error refreshing balance:', error);
+      console.error("Error refreshing balance:", error);
     }
   };
 
-
   const handleViewWallet = (wallet: any) => {
     // TODO: Implement view functionality
-    console.log('View wallet:', wallet);
+    console.log("View wallet:", wallet);
   };
 
   const handleEditWallet = (wallet: any) => {
     // TODO: Implement edit functionality
-    console.log('Edit wallet:', wallet);
+    console.log("Edit wallet:", wallet);
   };
 
   const handleDeleteWallet = (wallet: any) => {
     // TODO: Implement delete functionality
-    console.log('Delete wallet:', wallet);
+    console.log("Delete wallet:", wallet);
   };
 
   const handleTransferClick = (wallet: any) => {
     setSelectedWallet(wallet);
   };
 
-  const getTypeVariant = (type: string): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      personal: 'default',
-      business: 'secondary',
-      contract: 'outline',
+  const getTypeVariant = (
+    type: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      personal: "default",
+      business: "secondary",
+      contract: "outline",
     };
-    return variants[type] || 'outline';
+    return variants[type] || "outline";
   };
 
   const renderWalletCard = (wallet: any, index: number) => (
@@ -155,9 +166,9 @@ export default function WalletsPage() {
         { label: "Network", value: wallet.network },
         {
           label: "Address",
-          value: `${wallet.address.slice(0, 10)}...${wallet.address.slice(-8)}`
+          value: `${wallet.address.slice(0, 10)}...${wallet.address.slice(-8)}`,
         },
-        { label: "Balance", value: `${wallet.balance || '0.00'} ETH` },
+        { label: "Balance", value: `${wallet.balance || "0.00"} ETH` },
       ]}
       actions={[
         {

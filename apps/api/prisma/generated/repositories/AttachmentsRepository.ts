@@ -8,31 +8,40 @@ import { AttachmentModel } from "../models/index.js";
 @Injectable()
 export class AttachmentsRepository {
   @Inject()
-  protected prisma: PrismaService;
+  protected prisma!: PrismaService;
 
   get collection() {
-    return this.prisma.attachment
+    return this.prisma.attachment;
   }
 
   get groupBy() {
-    return this.collection.groupBy.bind(this.collection)
+    return this.collection.groupBy.bind(this.collection);
   }
 
   protected deserialize<T>(obj: null | Attachment | Attachment[]): T {
-    return deserialize<T>(obj, { type: AttachmentModel, collectionType: isArray(obj) ? Array : undefined })
+    return deserialize<T>(obj, {
+      type: AttachmentModel,
+      collectionType: isArray(obj) ? Array : undefined,
+    });
   }
 
-  async findUnique(args: Prisma.AttachmentFindUniqueArgs): Promise<AttachmentModel | null> {
+  async findUnique(
+    args: Prisma.AttachmentFindUniqueArgs,
+  ): Promise<AttachmentModel | null> {
     const obj = await this.collection.findUnique(args);
     return this.deserialize<AttachmentModel | null>(obj);
   }
 
-  async findFirst(args: Prisma.AttachmentFindFirstArgs): Promise<AttachmentModel | null> {
+  async findFirst(
+    args: Prisma.AttachmentFindFirstArgs,
+  ): Promise<AttachmentModel | null> {
     const obj = await this.collection.findFirst(args);
     return this.deserialize<AttachmentModel | null>(obj);
   }
 
-  async findMany(args?: Prisma.AttachmentFindManyArgs): Promise<AttachmentModel[]> {
+  async findMany(
+    args?: Prisma.AttachmentFindManyArgs,
+  ): Promise<AttachmentModel[]> {
     const obj = await this.collection.findMany(args);
     return this.deserialize<AttachmentModel[]>(obj);
   }
@@ -58,14 +67,14 @@ export class AttachmentsRepository {
   }
 
   deleteMany(args: Prisma.AttachmentDeleteManyArgs) {
-    return this.collection.deleteMany(args)
+    return this.collection.deleteMany(args);
   }
 
   updateMany(args: Prisma.AttachmentUpdateManyArgs) {
-    return this.collection.updateMany(args)
+    return this.collection.updateMany(args);
   }
 
   aggregate(args: Prisma.AttachmentAggregateArgs) {
-    return this.collection.aggregate(args)
+    return this.collection.aggregate(args);
   }
 }

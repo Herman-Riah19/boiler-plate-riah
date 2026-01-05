@@ -30,13 +30,13 @@ interface FormTextfieldProps {
 
 export function FormTextfield({
   form,
-  type="text",
+  type = "text",
   step,
   name,
   label,
   placeholder,
   description,
-  className
+  className,
 }: FormTextfieldProps) {
   return (
     <FormField
@@ -48,15 +48,27 @@ export function FormTextfield({
           <FormControl>
             {type === "number" ? (
               <Input
-                  type="number"
-                  step={step}
-                  placeholder={placeholder}
-                  {...field}
-                  value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                />
+                type="number"
+                step={step}
+                placeholder={placeholder}
+                {...field}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.valueAsNumber)}
+              />
+            ) : type === "textarea" ? (
+              <Textarea
+                className={className}
+                placeholder={placeholder}
+                {...field}
+              />
             ) : (
-              <Textarea className={className} placeholder={placeholder} {...field} />
+              <Input
+                type={type}
+                placeholder={placeholder}
+                {...field}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value)}
+              />
             )}
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}

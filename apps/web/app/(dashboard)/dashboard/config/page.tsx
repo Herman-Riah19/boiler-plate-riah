@@ -17,13 +17,7 @@ import {
   TabsTrigger,
 } from "@repo/ui/components/ui/tabs";
 import { ConfigServices } from "@/services/configServices";
-import {
-  Download,
-  RefreshCw,
-  Settings,
-  Database,
-  Shield,
-} from "lucide-react";
+import { Download, RefreshCw, Settings, Database, Shield } from "lucide-react";
 import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import {
   SystemConfigFormData,
@@ -33,7 +27,7 @@ import { StatsCards } from "@/components/card/stats-cards";
 import { PageHeader } from "@/components/page-header";
 import { EntityList } from "@/components/entity/entity-list";
 import { FormDialog } from "@/components/dialog/form-dialog";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 interface ConfigFormProps {
   onSubmit: (data: SystemConfigFormData) => void;
@@ -117,7 +111,7 @@ export default function ConfigPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("configs");
   const token = useAuthStore.getState().token;
-  
+
   // Stats cards example (static stats can be replaced with dynamic as needed)
   const stats = [
     {
@@ -183,8 +177,8 @@ export default function ConfigPage() {
           configs.map((config) =>
             config.key === key
               ? { ...config, value: config.defaultValue }
-              : config
-          )
+              : config,
+          ),
         );
       }
     } catch (error) {
@@ -211,7 +205,7 @@ export default function ConfigPage() {
   };
 
   const getCategoryVariant = (
-    category: string
+    category: string,
   ): "default" | "secondary" | "destructive" | "outline" => {
     const variants: Record<
       string,
@@ -274,7 +268,7 @@ export default function ConfigPage() {
       acc[cat].push(config);
       return acc;
     },
-    {} as Record<string, any[]>
+    {} as Record<string, any[]>,
   );
 
   return (
@@ -338,7 +332,7 @@ export default function ConfigPage() {
               <CardContent>
                 <div className="space-y-3">
                   {(Array.isArray(categoryConfigs) ? categoryConfigs : []).map(
-                    (config: any, idx: number) => renderConfigCard(config, idx)
+                    (config: any, idx: number) => renderConfigCard(config, idx),
                   )}
                 </div>
               </CardContent>

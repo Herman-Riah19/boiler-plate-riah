@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { AuditServices } from "@/services/auditServices";
@@ -10,10 +10,7 @@ import { StatsCards } from "@/components/card/stats-cards";
 import { Eye, Activity, User, Calendar, AlertTriangle, Trash2 } from "lucide-react";
 import { AuditLogForm } from "./auditLogForm";
 import { AuditLogFormData } from "@/validators/audit-log-validator";
-import { ContractServices } from "@/services/contractServices";
-import { OrganizationServices } from "@/services/organizationServices";
-import { UserServices } from "@/services/userServices";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function AuditPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -27,7 +24,7 @@ export default function AuditPage() {
         const data = await AuditServices.getAllAuditLogs(token as string);
         setAuditLogs(data);
       } catch (error) {
-        console.error('Error fetching audit logs:', error);
+        console.error("Error fetching audit logs:", error);
       }
     };
     getAuditLogs();
@@ -42,7 +39,7 @@ export default function AuditPage() {
         setDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating audit log:', error);
+      console.error("Error creating audit log:", error);
     } finally {
       setLoading(false);
     }
@@ -50,12 +47,12 @@ export default function AuditPage() {
 
   const handleViewAuditLog = (auditLog: any) => {
     // TODO: Implement view functionality
-    console.log('View audit log:', auditLog);
+    console.log("View audit log:", auditLog);
   };
 
   const handleDeleteAuditLog = (auditLog: any) => {
     // TODO: Implement delete functionality
-    console.log('Delete audit log:', auditLog);
+    console.log("Delete audit log:", auditLog);
   };
 
   const renderAuditLogCard = (auditLog: any, index: number) => (
@@ -105,7 +102,7 @@ export default function AuditPage() {
     },
     {
       title: "Today's Logs",
-      value: auditLogs.filter(log => {
+      value: auditLogs.filter((log) => {
         const today = new Date().toDateString();
         return new Date(log.createdAt).toDateString() === today;
       }).length,
@@ -115,8 +112,8 @@ export default function AuditPage() {
     },
     {
       title: "Critical Actions",
-      value: auditLogs.filter(log =>
-        ['delete', 'deploy', 'transfer'].includes(log.action)
+      value: auditLogs.filter((log) =>
+        ["delete", "deploy", "transfer"].includes(log.action),
       ).length,
       description: "Critical operations",
       icon: AlertTriangle,
@@ -124,7 +121,7 @@ export default function AuditPage() {
     },
     {
       title: "Active Users",
-      value: new Set(auditLogs.map(log => log.userId).filter(Boolean)).size,
+      value: new Set(auditLogs.map((log) => log.userId).filter(Boolean)).size,
       description: "Users with activity",
       icon: User,
       trend: { value: 1, label: "new this week", positive: true },

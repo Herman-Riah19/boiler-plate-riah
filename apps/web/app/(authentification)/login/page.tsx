@@ -1,62 +1,59 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@repo/ui/components/ui/button';
-import { Input } from '@repo/ui/components/ui/input';
-import { Label } from '@repo/ui/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
-import { useAuthStore } from '@/lib/auth-store';
-import { UserServices } from '@/services/userServices';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@repo/ui/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/ui/card";
+import { useAuthStore } from "@/store/auth-store";
+import { UserServices } from "@/services/userServices";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInFormData, SignInSchema } from "@/validators/user-validator";
+import { Form } from "@repo/ui/components/ui/form";
+import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
+import { Loader } from "lucide-react";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  const formData = useForm<SignInFormData>({
+    resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const isAuthenticated = useAuthStore((state: { isAuthenticated: any; }) => state.isAuthenticated);
-
-  useEffect(() => {
-    const msg = searchParams.get('message');
-    if (msg) {
-      setMessage(msg);
-    }
-  }, [searchParams]);
+  const isAuthenticated = useAuthStore(
+    (state: { isAuthenticated: any }) => state.isAuthenticated,
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = async (data: SignInFormData) => {
+    setError("");
     setLoading(true);
 
     try {
       await UserServices.login({
-        email: formData.email,
-        password: formData.password,
+        email: data.email,
+        password: data.password,
       });
 
       // Redirect to dashboard after successful login
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-    } finally {
+      setError("Invalid credentials");
       setLoading(false);
     }
   };
@@ -66,49 +63,37 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Connexion</CardTitle>
-          <CardDescription>
-            Connectez-vous à votre compte
-          </CardDescription>
+          <CardDescription>Connectez-vous à votre compte</CardDescription>
         </CardHeader>
         <CardContent>
-          {message && (
-            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-              {message}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
+          <Form {...formData}>
+            <form
+              onSubmit={formData.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
+              <FormTextfield
+                form={formData}
+                label="Email"
+                placeholder="Entrer votre nom"
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
+                {...formData.register("email")}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
+              <FormTextfield
+                form={formData}
+                label="Mot de passe"
+                placeholder="Entrer votre mot de passe"
                 type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
+                {...formData.register("password")}
               />
-            </div>
-            {error && (
-              <div className="text-red-500 text-sm">{error}</div>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Connexion...' : 'Se connecter'}
-            </Button>
-          </form>
+              {error && <div className="text-red-500 text-sm">{error}</div>}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? <Loader className="animate-spin" /> : "Se connecter"}
+              </Button>
+            </form>
+          </Form>
           <div className="mt-4 text-center">
             <span className="text-sm text-gray-600">
-              Pas de compte?{' '}
+              Pas de compte?{" "}
               <a href="/register" className="text-blue-600 hover:underline">
                 S'inscrire
               </a>

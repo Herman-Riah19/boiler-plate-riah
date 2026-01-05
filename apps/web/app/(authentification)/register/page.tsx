@@ -1,56 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@repo/ui/components/ui/button';
-import { Input } from '@repo/ui/components/ui/input';
-import { Label } from '@repo/ui/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
-import { UserServices } from '@/services/userServices';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { Label } from "@repo/ui/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/ui/card";
+import { UserServices } from "@/services/userServices";
+import { useForm } from "react-hook-form";
+import { SignupFormData, SignupSchema } from "@/validators/user-validator";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@repo/ui/components/ui/form";
+import { FormTextfield } from "@repo/ui/components/composable/FormTextfield";
+import { Loader } from "lucide-react";
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const formData = useForm<SignupFormData>({
+    resolver: zodResolver(SignupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      return;
-    }
+  const handleSubmit = async (data: SignupFormData) => {
+    setError("");
 
     setLoading(true);
 
+    if (data.password !== data.confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
     try {
       const result = await UserServices.register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
+        name: data.name,
+        email: data.email,
+        password: data.password,
       });
 
       if (result.success) {
-        router.push('/login?message=Inscription réussie');
+        router.push("/login?message=Inscription réussie");
       } else {
-        setError(result.message || 'Erreur lors de l\'inscription');
+        setError(result.message || "Erreur lors de l'inscription");
       }
     } catch (err) {
-      setError('Une erreur est survenue');
+      setError("Une erreur est survenue");
     } finally {
       setLoading(false);
     }
@@ -66,61 +74,51 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                required
+          <Form {...formData}>
+            <form
+              onSubmit={formData.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
+              <FormTextfield
+                form={formData}
+                label="Nom"
+                placeholder="Entrer le nom"
+                {...formData.register("name")}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
+
+              <FormTextfield
+                form={formData}
+                label="Email"
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
+                placeholder="Entrer l'email"
+                {...formData.register("email")}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
+
+              <FormTextfield
+                form={formData}
+                label="Mot de passe"
                 type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
+                placeholder="Entrer le mot de passe"
+                {...formData.register("password")}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
+
+              <FormTextfield
+                form={formData}
+                label="Confirmer le mot de passe"
                 type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
+                placeholder="Confirmer le mot de passe"
+                {...formData.register("confirmPassword")}
               />
-            </div>
-            {error && (
-              <div className="text-red-500 text-sm">{error}</div>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Inscription...' : 'S\'inscrire'}
-            </Button>
-          </form>
+
+              {error && <div className="text-red-500 text-sm">{error}</div>}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? <Loader className="animate-spin" /> : "S'inscrire"}
+              </Button>
+            </form>
+          </Form>
           <div className="mt-4 text-center">
             <span className="text-sm text-gray-600">
-              Déjà un compte?{' '}
+              Déjà un compte?{" "}
               <a href="/login" className="text-blue-600 hover:underline">
                 Se connecter
               </a>
