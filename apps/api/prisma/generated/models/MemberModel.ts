@@ -3,7 +3,6 @@ import { Description, Enum, Format, Groups, Property, Required } from "@tsed/sch
 import { Role } from "../enums/index.js";
 import { UserModel } from "./UserModel.js";
 import type { Relation } from "@tsed/core";
-import { OrganizationModel } from "./OrganizationModel.js";
 
 export class MemberModel implements Member {
   @Property(String)
@@ -28,10 +27,6 @@ export class MemberModel implements Member {
   @Property(() => UserModel)
   @Required()
   user: Relation<UserModel>;
-
-  @Property(() => OrganizationModel)
-  @Required()
-  organization: Relation<OrganizationModel>;
 
   @Property(Date)
   @Format("date-time")
